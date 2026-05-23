@@ -171,5 +171,25 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
   }
 </script>
+<script>
+  /* scroll-hide nav */
+  (function(){
+    const w = document.querySelector('.nav-wrap');
+    if (!w) return;
+    let last = 0, ticking = false;
+    window.addEventListener('scroll', function(){
+      if (!ticking) {
+        requestAnimationFrame(function(){
+          const y = window.scrollY;
+          if (y > last && y > 80) { w.classList.add('nav-hidden'); }
+          else { w.classList.remove('nav-hidden'); }
+          last = y; ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
+</script>
+
 </body>
 </html>
