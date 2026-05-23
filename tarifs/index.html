@@ -413,8 +413,8 @@
       .footer-grid { grid-template-columns: 1fr; gap: 32px; padding-bottom: 40px; }
     }
       /* scroll-hide nav */
-    .nav-wrap { transition: transform 400ms var(--pt-ease-out), opacity 350ms; }
-    .nav-wrap.nav-hidden { transform: translateY(-130%); opacity: 0; pointer-events: none; }
+    .nav-wrap { transition: top 400ms cubic-bezier(0.25,0,0,1), opacity 350ms; }
+    .nav-wrap.nav-hidden { top: -200px; opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body>
