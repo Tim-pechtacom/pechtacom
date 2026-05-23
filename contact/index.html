@@ -155,7 +155,8 @@
     .toast.show { transform: translateY(0); opacity: 1; pointer-events: all; }
     .toast-accent { position: absolute; left: 0; top: 20%; bottom: 20%; width: 4px; border-radius: 4px; background: var(--pt-gradient); }
     .toast-close { position: absolute; top: 12px; right: 12px; background: none; border: none; cursor: pointer; font-size: 16px; color: var(--pt-text-muted); padding: 4px; line-height: 1; }
-    .toast-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
+    .toast-icon { line-height: 1; flex-shrink: 0; }
+    .toast-icon img { height: 36px; width: auto; display: block; }
     .toast-title { font-family: var(--pt-font-title); font-weight: 800; font-size: 17px; letter-spacing: -0.01em; margin-bottom: 4px; }
     .toast-body { font-size: 13.5px; color: var(--pt-text-muted); line-height: 1.5; }
 
@@ -461,7 +462,7 @@
 <div class="toast" id="briefToast" role="status" aria-live="polite">
   <div class="toast-accent"></div>
   <button class="toast-close" aria-label="Fermer">✕</button>
-  <div class="toast-icon">🍑</div>
+  <div class="toast-icon"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1779561899/favicon_gpzqri.svg" alt="Pech'tacom"></div>
   <div class="toast-title">Message bien reçu !</div>
   <div class="toast-body">On revient vers vous sous 48h ouvrées. La réponse est faite maison, sans pesticide.</div>
 </div>
