@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contactez Pech'tacom — Décrivez votre projet, on revient vers vous sous 48h. Devis gratuit, sans engagement.">
+  <title>Contact — Pech'tacom</title>
+  <link rel="icon" href="../assets/favicon.ico">
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--pt-bg); color: var(--pt-noir); font-family: var(--pt-font-body); }
+
+    /* ============ NAV ============ */
+    .nav-wrap { padding: 24px 32px 0; position: sticky; top: 10px; z-index: 50; }
+    .nav {
+      max-width: 1216px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0px 14px 0px 24px; border-radius: 999px;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(20px);
+      border: 1px solid rgba(38,36,38,.08);
+      box-shadow: 0 4px 20px -8px rgba(38,36,38,.08);
+    }
+    .nav img { height: 80px; }
+    .nav .links { display: flex; gap: 4px; }
+    .nav .links a {
+      font-size: 14px; font-weight: 600; color: var(--pt-noir);
+      padding: 8px 14px; border-radius: 999px; text-decoration: none;
+    }
+    .nav .links a.active, .nav .links a:hover { background: var(--pt-bg-warm); }
+    .nav .cta {
+      background: var(--pt-rose); color: white; font-weight: 700; font-size: 14px;
+      padding: 11px 18px; border-radius: 999px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+
+    /* ============ HERO ============ */
+    .hero { padding: 80px 32px 56px; }
+    .hero-inner {
+      max-width: 1216px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+    }
+    .hero .ey {
+      font-family: var(--pt-font-title); font-size: 12px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--pt-rose); font-weight: 700; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: var(--pt-font-title); font-weight: 800;
+      font-size: clamp(48px, 6vw, 88px); letter-spacing: -0.035em; line-height: 0.96;
+      margin: 0 0 24px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      background: var(--pt-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;
+      padding-right: 8px;
+    }
+    .hero .lede { font-size: 19px; line-height: 1.6; color: var(--pt-text-muted); margin: 0 0 40px; max-width: 520px; }
+
+    .trust-list { display: flex; flex-direction: column; gap: 16px; }
+    .trust-item {
+      display: flex; align-items: center; gap: 14px;
+      font-size: 15px; font-weight: 600;
+    }
+    .trust-item .icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--pt-bg-warm); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--pt-rose);
+    }
+    .trust-item .icon svg { width: 20px; height: 20px; }
+    .trust-item .sub { font-size: 13px; font-weight: 400; color: var(--pt-text-muted); margin-top: 2px; }
+
+    /* ============ FORM CARD ============ */
+    .form-card {
+      background: white; border-radius: 32px; padding: 48px 40px;
+      border: 1.5px solid var(--pt-border);
+      box-shadow: 0 24px 64px -32px rgba(38,36,38,.12);
+    }
+    .form-card h2 {
+      font-family: var(--pt-font-title); font-weight: 800;
+      font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.025em; line-height: 1.1;
+      margin: 0 0 8px;
+    }
+    .form-card .subtitle { font-size: 15px; color: var(--pt-text-muted); margin: 0 0 32px; line-height: 1.5; }
+
+    form { display: flex; flex-direction: column; gap: 20px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--pt-text-muted);
+    }
+    .field input, .field textarea, .field select {
+      font-family: var(--pt-font-body); font-size: 15px;
+      padding: 14px 16px; border-radius: 14px;
+      border: 1.5px solid var(--pt-border); background: var(--pt-bg-warm);
+      color: var(--pt-noir); outline: none; width: 100%;
+      transition: border-color 200ms, box-shadow 200ms;
+      -webkit-appearance: none;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--pt-rose);
+      box-shadow: 0 0 0 3px rgba(255,0,61,.12);
+      background: white;
+    }
+    .field textarea { resize: vertical; min-height: 120px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    form button[type="submit"] {
+      font-family: var(--pt-font-body); font-size: 15px; font-weight: 700;
+      background: var(--pt-rose); color: white;
+      padding: 16px 28px; border-radius: 999px; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+      box-shadow: 0 10px 24px -8px rgba(255,0,61,.5);
+      transition: background 200ms, transform 160ms;
+      width: 100%;
+    }
+    form button[type="submit"]:hover { background: #E5002F; transform: translateY(-1px); }
+    form button[type="submit"]:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .form-note {
+      font-size: 12.5px; color: var(--pt-text-muted); text-align: center; margin-top: -4px;
+    }
+
+    /* ============ INFOS COMPLÉMENTAIRES ============ */
+    section.infos { padding: 80px 32px; background: var(--pt-bg-warm); }
+    .infos-grid {
+      max-width: 1216px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .info-card {
+      background: white; border-radius: 24px; padding: 32px;
+      border: 1.5px solid var(--pt-border);
+    }
+    .info-card .icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: var(--pt-bg-warm); margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center; color: var(--pt-rose);
+    }
+    .info-card h3 {
+      font-family: var(--pt-font-title); font-weight: 800; font-size: 20px;
+      letter-spacing: -0.02em; margin: 0 0 10px;
+    }
+    .info-card p { font-size: 14.5px; line-height: 1.6; color: var(--pt-text-muted); margin: 0; }
+    .info-card a { color: var(--pt-rose); text-decoration: none; font-weight: 600; }
+
+    /* ============ TOAST ============ */
+    .toast {
+      position: fixed; bottom: 32px; right: 32px; z-index: 999;
+      background: white; border-radius: 20px; padding: 20px 20px 20px 16px;
+      display: flex; gap: 14px; align-items: flex-start; max-width: 360px; width: 90%;
+      box-shadow: 0 20px 60px -16px rgba(38,36,38,.28), 0 0 0 1.5px var(--pt-border);
+      transform: translateY(120%); opacity: 0;
+      transition: transform 480ms var(--pt-ease-out), opacity 400ms;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+    .toast-accent { position: absolute; left: 0; top: 20%; bottom: 20%; width: 4px; border-radius: 4px; background: var(--pt-gradient); }
+    .toast-close { position: absolute; top: 12px; right: 12px; background: none; border: none; cursor: pointer; font-size: 16px; color: var(--pt-text-muted); padding: 4px; line-height: 1; }
+    .toast-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
+    .toast-title { font-family: var(--pt-font-title); font-weight: 800; font-size: 17px; letter-spacing: -0.01em; margin-bottom: 4px; }
+    .toast-body { font-size: 13.5px; color: var(--pt-text-muted); line-height: 1.5; }
+
+    /* ============ FOOTER ============ */
+    footer { background: var(--pt-noir); color: white; padding: 50px 32px 40px; }
+    .footer-grid {
+      max-width: 1216px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px;
+      padding-bottom: 56px; border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-grid img { height: 160px; margin-bottom: -50px; margin-top: -50px; }
+    .footer-grid .tagline { font-family: var(--pt-font-title); font-weight: 500; font-style: italic; font-size: 18px; opacity: .85; max-width: 320px; line-height: 1.5; }
+    .footer-col h5 { font-family: var(--pt-font-title); font-weight: 700; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-jaune); margin: 0 0 16px; }
+    .footer-col a { display: block; color: rgba(255,255,255,.85); text-decoration: none; font-size: 14.5px; padding: 6px 0; }
+    .footer-col a:hover { color: white; }
+    .footer-bottom {
+      max-width: 1216px; margin: 0 auto; padding-top: 24px;
+      display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+      font-size: 13px; color: rgba(255,255,255,.6);
+    }
+    .footer-bottom .legal { display: flex; gap: 20px; }
+    .footer-bottom a { color: rgba(255,255,255,.6); text-decoration: none; }
+
+    /* ============ MENU MOBILE ============ */
+    .menu-toggle {
+      display: none;
+      flex-direction: column; justify-content: center; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 8px; margin-right: 4px;
+    }
+    .menu-toggle span {
+      display: block; width: 22px; height: 2px;
+      background: var(--pt-noir); border-radius: 2px;
+      transition: transform 240ms var(--pt-ease-out), opacity 160ms;
+    }
+    .mobile-menu {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(38,36,38,.82);
+      backdrop-filter: blur(0px);
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none;
+      transition: opacity 450ms var(--pt-ease-out), backdrop-filter 500ms var(--pt-ease-out);
+    }
+    .mobile-menu.open { opacity: 1; pointer-events: all; backdrop-filter: blur(14px); }
+    .mobile-menu-top {
+      margin-top: 10px; height: 84px;
+      display: flex; justify-content: flex-end; align-items: center;
+      padding-right: 12px; flex-shrink: 0;
+    }
+    .mobile-menu-close {
+      background: none; border: none; color: rgba(255,255,255,.7);
+      font-size: 22px; cursor: pointer; padding: 8px; line-height: 1;
+    }
+    .mobile-menu-close:hover { color: white; }
+    .mobile-menu-body {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding-bottom: 48px;
+    }
+    .mobile-links { display: flex; flex-direction: column; align-items: center; }
+    .mobile-links a {
+      font-family: var(--pt-font-title); font-weight: 800;
+      font-size: clamp(36px, 10vw, 56px); letter-spacing: -0.03em;
+      color: white; text-decoration: none; padding: 10px 0;
+      transition: color 160ms;
+    }
+    .mobile-links a:hover { color: var(--pt-rose); }
+    .mobile-cta {
+      margin-top: 32px; background: var(--pt-rose); color: white;
+      font-weight: 700; font-size: 16px; padding: 16px 32px;
+      border-radius: 999px; text-decoration: none;
+    }
+
+    /* scroll-hide nav */
+    .nav-wrap { transition: transform 400ms var(--pt-ease-out), opacity 350ms; }
+    .nav-wrap.nav-hidden { transform: translateY(-130%); opacity: 0; pointer-events: none; }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 1024px) {
+      .infos-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-wrap { padding: 10px 16px 0; }
+      .nav { padding: 2px 12px 2px 16px; }
+      .nav .links { display: none; }
+      .nav .cta { display: none; }
+      .menu-toggle { display: flex; }
+      .hero { padding: 48px 16px 40px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .form-card { padding: 32px 24px; }
+      .field-row { grid-template-columns: 1fr; }
+      section.infos { padding: 56px 16px; }
+      .infos-grid { grid-template-columns: 1fr; }
+      footer { padding: 48px 16px 32px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; padding-bottom: 40px; }
+      .toast { left: 16px; right: 16px; width: auto; bottom: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <nav class="nav">
+    <a href="/accueil" style="display:flex; border:none; padding:0"><img src="../assets/LOGO COULEURS.png" alt="Pech'tacom"></a>
+    <div class="links">
+      <a href="/accueil">Studio</a>
+      <a href="/nos-projets">Nos projets</a>
+      <a href="/accueil#process">Process</a>
+      <a href="/tarifs">Tarifs</a>
+      <a href="/contact" class="active">Contact</a>
+      <a href="/a-propos">À propos</a>
+    </div>
+    <a href="/contact" class="cta">Brief express →</a>
+    <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="ey">★ On vous répond sous 48h</div>
+      <h1>Parlons de votre <em>projet.</em></h1>
+      <p class="lede">Pas de formulaire qui disparaît dans le vide. On lit chaque message, on répond en personne — et on démarre toujours par comprendre avant de chiffrer.</p>
+      <div class="trust-list">
+        <div class="trust-item">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            Réponse sous 48h ouvrées
+            <div class="sub">Pas de bot. Une vraie réponse, faite main.</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            Devis gratuit & sans engagement
+            <div class="sub">Acompte 30% uniquement après validation.</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            Particuliers & professionnels
+            <div class="sub">Mariages, identités, réseaux, print — on s'adapte.</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div>
+            ★ 5/5 · 9 avis clients
+            <div class="sub">100% de satisfaction depuis 2025.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="form-card">
+      <h2>Démarrez la conversation</h2>
+      <p class="subtitle">Deux champs suffisent. On s'occupe du reste.</p>
+      <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="c65cbc5b-dbaa-4faa-9e58-1771724d14b2">
+        <input type="hidden" name="subject" value="Nouveau contact — Pech'tacom">
+        <input type="hidden" name="from_name" value="Site Pech'tacom">
+        <input type="hidden" name="botcheck" value="">
+        <div class="field-row">
+          <div class="field">
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" name="prenom" placeholder="Marie" required>
+          </div>
+          <div class="field">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" name="nom" placeholder="Dupont">
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="marie@maison-fruits.fr" required>
+        </div>
+        <div class="field">
+          <label for="type">Type de projet</label>
+          <select id="type" name="type">
+            <option value="">— Choisir —</option>
+            <option>Photographie</option>
+            <option>Vidéo</option>
+            <option>Drone</option>
+            <option>Identité visuelle / Branding</option>
+            <option>Print (flyer, affiche, carte…)</option>
+            <option>Réseaux sociaux</option>
+            <option>Autre / Mix</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">Votre projet en quelques mots</label>
+          <textarea id="message" name="message" placeholder="On lance un nouveau produit et on cherche des visuels pour les réseaux…" required></textarea>
+        </div>
+        <button type="submit" id="submit-btn">Envoyer le message →</button>
+        <p class="form-note">TVA non applicable · Devis gratuit · Réponse sous 48h</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- INFOS -->
+<section class="infos">
+  <div class="infos-grid">
+    <div class="info-card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <h3>Où on travaille</h3>
+      <p>Studio basé à <strong>Strasbourg</strong>. On se déplace en Alsace et alentours. Les visios fonctionnent très bien pour un premier échange.</p>
+    </div>
+    <div class="info-card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3>Délais moyens</h3>
+      <p>Devis sous <strong>48h</strong>. Shooting photo sous 2–3 semaines. Identité visuelle sur 4–6 semaines. On cale toujours un planning au devis.</p>
+    </div>
+    <div class="info-card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.16h3a2 2 0 0 1 2 1.72c.127.96.36 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.76a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
+      <h3>Nous suivre</h3>
+      <p>
+        <a href="https://www.instagram.com/pechtacom/">Instagram @pechtacom</a><br>
+        <a href="https://www.linkedin.com/company/pech-tacom/">LinkedIn Pech'tacom</a><br>
+        <a href="https://www.facebook.com/profile.php?id=61560342137131">Facebook Pech'tacom</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <img src="../assets/LOGO COULEURS.png" alt="Pech'tacom">
+      <p class="tagline">Agence de communication visuelle, basé à Strasbourg depuis 2025.<br>Le fruit de vos idées.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Agence</h5>
+      <a href="/a-propos">À propos</a>
+      <a href="#">Manifeste</a>
+      <a href="#">Recrutement</a>
+      <a href="#">Presse</a>
+    </div>
+    <div class="footer-col">
+      <h5>Services</h5>
+      <a href="/accueil#services">Identité</a>
+      <a href="/accueil#services">Photographie</a>
+      <a href="/accueil#services">Vidéo</a>
+      <a href="/accueil#services">Pack complet</a>
+    </div>
+    <div class="footer-col">
+      <h5>Suivez-nous</h5>
+      <a href="https://www.instagram.com/pechtacom/">Instagram</a>
+      <a href="https://www.linkedin.com/company/pech-tacom/">LinkedIn</a>
+      <a href="https://www.facebook.com/profile.php?id=61560342137131">Facebook</a>
+      <a href="#">Newsletter</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 Pech'tacom · Strasbourg</div>
+    <div class="legal">
+      <a href="#">Mentions légales</a>
+      <a href="#">Politique de confidentialité</a>
+      <a href="/404">404</a>
+    </div>
+  </div>
+</footer>
+
+<!-- MENU MOBILE OVERLAY -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-top">
+    <button class="mobile-menu-close" aria-label="Fermer">✕</button>
+  </div>
+  <div class="mobile-menu-body">
+    <nav class="mobile-links">
+      <a href="/accueil">Studio</a>
+      <a href="/nos-projets">Nos projets</a>
+      <a href="/accueil#process">Process</a>
+      <a href="/tarifs">Tarifs</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
+    </nav>
+    <a href="/contact" class="mobile-cta">Brief express →</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="briefToast" role="status" aria-live="polite">
+  <div class="toast-accent"></div>
+  <button class="toast-close" aria-label="Fermer">✕</button>
+  <div class="toast-icon">🍑</div>
+  <div class="toast-title">Message bien reçu !</div>
+  <div class="toast-body">On revient vers vous sous 48h ouvrées — la réponse est faite maison, pas en série.</div>
+</div>
+
+<script>
+  /* Menu hamburger */
+  const toggle = document.querySelector('.menu-toggle');
+  const menu   = document.getElementById('mobileMenu');
+  const close  = menu.querySelector('.mobile-menu-close');
+  function openMenu()  { menu.classList.add('open'); menu.setAttribute('aria-hidden','false'); toggle.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+  function closeMenu() { menu.classList.remove('open'); menu.setAttribute('aria-hidden','true'); toggle.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+  toggle.addEventListener('click', openMenu);
+  close.addEventListener('click', closeMenu);
+  menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+</script>
+
+<script>
+  /* Toast + soumission formulaire */
+  const toast      = document.getElementById('briefToast');
+  const toastClose = toast && toast.querySelector('.toast-close');
+  let toastTimer;
+  function showToast() { toast.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 7000); }
+  function hideToast()  { toast.classList.remove('show'); }
+  if (toastClose) toastClose.addEventListener('click', hideToast);
+
+  const form = document.getElementById('contact-form');
+  if (form) {
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn  = document.getElementById('submit-btn');
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Envoi en cours…';
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        if (res.ok) { form.reset(); showToast(); }
+        else { btn.textContent = 'Erreur — réessayez'; }
+      } catch { btn.textContent = 'Erreur réseau'; }
+      finally { setTimeout(() => { btn.disabled = false; btn.textContent = orig; }, 3000); }
+    });
+  }
+</script>
+
+<script>
+  /* scroll-hide nav */
+  (function(){
+    const w = document.querySelector('.nav-wrap');
+    if (!w) return;
+    let last = 0, ticking = false;
+    window.addEventListener('scroll', function(){
+      if (!ticking) {
+        requestAnimationFrame(function(){
+          const y = window.scrollY;
+          if (y > last && y > 80) { w.classList.add('nav-hidden'); }
+          else { w.classList.remove('nav-hidden'); }
+          last = y; ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>

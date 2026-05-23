@@ -390,6 +390,9 @@
     @media (max-width: 480px) {
       .toast { left: 16px; right: 16px; width: auto; bottom: 20px; }
     }
+      /* scroll-hide nav */
+    .nav-wrap { transition: transform 400ms var(--pt-ease-out), opacity 350ms; }
+    .nav-wrap.nav-hidden { transform: translateY(-130%); opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -398,17 +401,15 @@
 <div class="nav-wrap">
   <nav class="nav">
     <a href="/accueil" style="display:flex; border:none; padding:0"><img src="../assets/LOGO COULEURS.png" alt="Pech'tacom"></a>
-    <div class="links">
+        <div class="links">
       <a href="#" class="active">Studio</a>
-      <a href="#services">Services</a>
-      <a href="#travaux">Travaux</a>
       <a href="/nos-projets">Nos projets</a>
       <a href="#process">Process</a>
-      <a href="#contact">Contact</a>
-      <a href="/a-propos">À propos</a>
       <a href="/tarifs">Tarifs</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
     </div>
-    <a href="#contact" class="cta">Brief express →</a>
+    <a href="/contact" class="cta">Brief express →</a>
     <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -439,41 +440,6 @@
     </div>
   </div>
 </section>
-
-<!-- MARQUEE PRESTATIONS -->
-<div class="marquee-section marquee-section--prestations">
-  <div class="marquee-label-wrap">
-    <div class="marquee-label">Nos différentes prestations</div>
-  </div>
-  <div class="marquee">
-    <div class="marquee-inner">
-      <div class="marquee-track">
-        <span>Flyer</span><span>·</span>
-        <span>Affiches</span><span>·</span>
-        <span>Carte de visite</span><span>·</span>
-        <span>Vidéo</span><span>·</span>
-        <span>Photographie</span><span>·</span>
-        <span>Corporate</span><span>·</span>
-        <span>Identité de marque</span><span>·</span>
-        <span>Charte graphique</span><span>·</span>
-        <span>Teaser événementiel</span><span>·</span>
-        <span>Réseaux sociaux</span><span>·</span>
-      </div>
-      <div class="marquee-track" aria-hidden="true">
-        <span>Flyer</span><span>·</span>
-        <span>Affiches</span><span>·</span>
-        <span>Carte de visite</span><span>·</span>
-        <span>Vidéo</span><span>·</span>
-        <span>Photographie</span><span>·</span>
-        <span>Corporate</span><span>·</span>
-        <span>Identité de marque</span><span>·</span>
-        <span>Charte graphique</span><span>·</span>
-        <span>Teaser événementiel</span><span>·</span>
-        <span>Réseaux sociaux</span><span>·</span>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- SERVICES -->
 <section class="services" id="services">
@@ -543,25 +509,25 @@
   <div class="process-grid">
     <div>
       <div style="font-family: var(--pt-font-title); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-rose); font-weight: 700; margin-bottom: 12px">Process</div>
-      <h2>Trois saisons, un seul projet.</h2>
+      <h2>Quatre saisons, un seul projet.</h2>
       <p class="lede">Notre méthode est inspirée du calendrier d'un verger : on plante avant de récolter, on taille avant de faire fleurir.</p>
     </div>
     <div class="steps">
       <div class="step">
         <div class="n">01</div>
         <div>
-          <h4>Atelier découverte</h4>
-          <p>Une demi-journée à Strasbourg ou en visio. On comprend votre marché, vos contraintes, vos non-négociables.</p>
+          <h4>Analyse de votre brief</h4>
+          <p>On étudie votre brief en détail : votre marché, vos contraintes, vos ambitions. Plus on comprend, mieux on crée.</p>
         </div>
         <div class="dur">2 h</div>
       </div>
       <div class="step">
         <div class="n">02</div>
         <div>
-          <h4>Stratégie &amp; cadrage</h4>
-          <p>On rédige un brief qui tient sur une page : positionnement, audiences, ton, livrables, planning. Vous le validez avant qu'on dessine quoi que ce soit.</p>
+          <h4>Envoi du devis personnalisé</h4>
+          <p>Un devis sur-mesure selon votre projet réel — livrables, planning, budget. Vous le validez avant qu'on démarre.</p>
         </div>
-        <div class="dur">1 sem.</div>
+        <div class="dur">48 h</div>
       </div>
       <div class="step">
         <div class="n">03</div>
@@ -728,14 +694,15 @@
     <button class="mobile-menu-close" aria-label="Fermer">✕</button>
   </div>
   <div class="mobile-menu-body">
-    <nav class="mobile-links">
+        <nav class="mobile-links">
       <a href="/accueil">Studio</a>
       <a href="/nos-projets">Nos projets</a>
-      <a href="/a-propos">À propos</a>
+      <a href="#process">Process</a>
       <a href="/tarifs">Tarifs</a>
-      <a href="#contact">Contact</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
     </nav>
-    <a href="#contact" class="mobile-cta">Brief express →</a>
+    <a href="/contact" class="mobile-cta">Brief express →</a>
   </div>
 </div>
 

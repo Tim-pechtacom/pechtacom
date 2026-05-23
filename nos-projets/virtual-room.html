@@ -190,6 +190,9 @@
       .projet-cta-inner { flex-direction: column; align-items: flex-start; }
       footer.mini { padding: 20px 16px; }
     }
+      /* scroll-hide nav */
+    .nav-wrap { transition: transform 400ms var(--pt-ease-out), opacity 350ms; }
+    .nav-wrap.nav-hidden { transform: translateY(-130%); opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -198,17 +201,15 @@
 <div class="nav-wrap">
   <nav class="nav">
     <a href="/accueil"><img src="../assets/LOGO COULEURS.png" alt="Pech'tacom"></a>
-    <div class="links">
+        <div class="links">
       <a href="/accueil">Studio</a>
-      <a href="/accueil#services">Services</a>
-      <a href="/accueil#travaux">Travaux</a>
       <a href="/nos-projets" class="active">Nos projets</a>
       <a href="/accueil#process">Process</a>
-      <a href="/accueil#contact">Contact</a>
-      <a href="/a-propos">À propos</a>
       <a href="/tarifs">Tarifs</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
     </div>
-    <a href="/accueil#contact" class="cta">Brief express →</a>
+    <a href="/contact" class="cta">Brief express →</a>
     <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -304,14 +305,15 @@
     <button class="mobile-menu-close" aria-label="Fermer">✕</button>
   </div>
   <div class="mobile-menu-body">
-    <nav class="mobile-links">
+        <nav class="mobile-links">
       <a href="/accueil">Studio</a>
       <a href="/nos-projets">Nos projets</a>
-      <a href="/a-propos">À propos</a>
+      <a href="/accueil#process">Process</a>
       <a href="/tarifs">Tarifs</a>
-      <a href="/accueil#contact">Contact</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
     </nav>
-    <a href="/accueil#contact" class="mobile-cta">Brief express →</a>
+    <a href="/contact" class="mobile-cta">Brief express →</a>
   </div>
 </div>
 
