@@ -125,29 +125,32 @@
     .services-head .ey { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-rose); font-weight: 700; margin-bottom: 8px; font-family: var(--pt-font-title); }
     .services-head p { font-size: 16px; color: var(--pt-text-muted); max-width: 320px; line-height: 1.55; margin: 0; }
 
-    .services-grid { max-width: 1216px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .svc {
-      background: white; border-radius: 28px; padding: 32px;
-      display: flex; flex-direction: column; gap: 16px;
+    .services-duo { max-width: 1216px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .svc-big {
+      border-radius: 28px; padding: 56px 48px;
+      display: flex; flex-direction: column; gap: 20px;
+      background: white;
       transition: transform 240ms var(--pt-ease-out);
     }
-    .svc:hover { transform: translateY(-4px); }
-    .svc.feature { background: var(--pt-noir); color: white; }
-    .svc.feature p { color: rgba(255,255,255,.72); }
-    .svc-num { font-family: var(--pt-font-title); font-weight: 800; font-size: 14px; letter-spacing: 0.04em; color: var(--pt-rose); }
-    .svc.feature .svc-num { color: var(--pt-jaune); }
-    .svc h3 { font-family: var(--pt-font-title); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; line-height: 1.08; margin: 0; }
-    .svc p { font-size: 14.5px; line-height: 1.55; color: var(--pt-text-muted); margin: 0; }
-    .svc .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .svc .tag { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--pt-bg-warm); color: var(--pt-noir); }
-    .svc.feature .tag { background: rgba(255,255,255,.12); color: white; }
-    .svc .price { display: flex; align-items: baseline; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--pt-border); }
-    .svc.feature .price { border-top-color: rgba(255,255,255,.18); }
-    .svc .price .from { font-size: 12px; color: var(--pt-text-muted); }
-    .svc.feature .price .from { color: rgba(255,255,255,.6); }
-    .svc .price .amt { font-family: var(--pt-font-title); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; }
-    .svc.feature .price .amt { color: white; }
-    .svc .arrow { margin-left: auto; font-family: var(--pt-font-title); font-weight: 700; font-size: 18px; }
+    .svc-big:hover { transform: translateY(-4px); }
+    .svc-big.dark { background: var(--pt-noir); color: white; }
+    .svc-big .svc-label { font-family: var(--pt-font-title); font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-rose); }
+    .svc-big.dark .svc-label { color: var(--pt-jaune); }
+    .svc-big h3 { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(40px, 4.5vw, 64px); letter-spacing: -0.03em; line-height: 1.02; margin: 0; }
+    .svc-big p { font-size: 16px; line-height: 1.6; color: var(--pt-text-muted); margin: 0; max-width: 440px; }
+    .svc-big.dark p { color: rgba(255,255,255,.72); }
+    .svc-big .svc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .svc-big .svc-tag { font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: var(--pt-bg-warm); color: var(--pt-noir); }
+    .svc-big.dark .svc-tag { background: rgba(255,255,255,.12); color: white; }
+    .services-cta { max-width: 1216px; margin: 40px auto 0; text-align: center; }
+    .svc-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--pt-noir); color: white;
+      font-weight: 700; font-size: 16px;
+      padding: 18px 32px; border-radius: 999px; text-decoration: none;
+      transition: background 200ms var(--pt-ease-out);
+    }
+    .svc-cta:hover { background: #3a3638; }
 
     /* ============ PROCESS ============ */
     section.process { padding: 96px 32px; background: white; }
@@ -315,8 +318,6 @@
 
     /* ============ RESPONSIVE ============ */
     @media (max-width: 1024px) {
-      .services-grid { grid-template-columns: 1fr 1fr; }
-      .svc:last-child { grid-column: 1 / -1; }
       .work-grid { grid-template-columns: 1fr 1fr; }
       .case-1 { grid-column: 1 / -1; grid-row: auto; min-height: 320px; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -338,9 +339,8 @@
 
       section.services, section.process, section.work, section.quote, section.cta { padding: 64px 16px; }
       .services-head { flex-direction: column; gap: 12px; align-items: stretch; }
-      .services-head p { max-width: none; }
-      .services-grid { grid-template-columns: 1fr; }
-      .svc:last-child { grid-column: auto; }
+      .services-duo { grid-template-columns: 1fr; }
+      .svc-big { padding: 40px 32px; }
 
       .process-grid { grid-template-columns: 1fr; gap: 40px; }
       .step { grid-template-columns: 48px 1fr; }
@@ -448,59 +448,36 @@
       <div class="ey">Nos prestations</div>
       <h2>Ce qu'on cultive,<br>pour vous.</h2>
     </div>
-    <p>Trois offres principales, ajustables à votre saison.</p>
   </div>
-  <div class="services-grid">
+  <div class="services-duo">
 
-    <div class="svc">
-      <div class="svc-num">01 / Branding</div>
-      <h3>Identité de marque</h3>
-      <p>Logo, charte graphique, déclinaisons papier &amp; digital. On creuse l'âme de la marque avant de dessiner sa peau.</p>
-      <div class="tags">
-        <span class="tag">Logo</span>
-        <span class="tag">Charte</span>
-        <span class="tag">Affiche</span>
-        <span class="tag">Impression</span>
-      </div>
-      <div class="price">
-        <span class="from">à partir de</span>
-        <span class="amt">745 €</span>
-        <span class="arrow">→</span>
+    <div class="svc-big">
+      <div class="svc-label">01 — Image & Mouvement</div>
+      <h3>Photo &amp; Vidéo</h3>
+      <p>Photographie corporate, événementielle ou mariage, teasers vidéo, contenu pour les réseaux sociaux — on immortalise ce qui vous ressemble.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Photographie</span>
+        <span class="svc-tag">Vidéo</span>
+        <span class="svc-tag">Drone</span>
+        <span class="svc-tag">Réseaux sociaux</span>
       </div>
     </div>
 
-    <div class="svc">
-      <div class="svc-num" style="color: var(--pt-rose);">02 / Web · ★ recommandé</div>
-      <h3>Photographie ou Vidéo</h3>
-      <p>Photos / film de mariage, teaser événementiel, photos corporate, images et vidéos pour les réseaux sociaux.</p>
-      <div class="tags">
-        <span class="tag">Photographie</span>
-        <span class="tag">Vidéo</span>
-        <span class="tag">Réseaux sociaux</span>
-      </div>
-      <div class="price">
-        <span class="from">à partir de</span>
-        <span class="amt">485 €</span>
-        <span class="arrow">→</span>
+    <div class="svc-big dark">
+      <div class="svc-label">02 — Identité visuelle</div>
+      <h3>Graphisme &amp; Print</h3>
+      <p>Logo, charte graphique, affiches, flyers, cartes de visite — on dessine la peau de votre marque pour qu'elle se reconnaisse au premier regard.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Identité graphique</span>
+        <span class="svc-tag">Affiche</span>
+        <span class="svc-tag">Flyer</span>
+        <span class="svc-tag">Carte de visite</span>
       </div>
     </div>
 
-    <div class="svc feature">
-      <div class="svc-num">03 / Web · ★ recommandé</div>
-      <h3>Photographie <span style="color: var(--pt-jaune);">et</span> Vidéo</h3>
-      <p>Notre pack le plus complet pour une présence ou des souvenirs uniques</p>
-      <div class="tags">
-        <span class="tag">Photographie</span>
-        <span class="tag">Vidéo</span>
-        <span class="tag">Réseaux sociaux</span>
-      </div>
-      <div class="price">
-        <span class="from">à partir de</span>
-        <span class="amt">815 €</span>
-        <span class="arrow">→</span>
-      </div>
-    </div>
-
+  </div>
+  <div class="services-cta">
+    <a href="/tarifs" class="svc-cta">Voir ce que nous proposons →</a>
   </div>
 </section>
 
