@@ -59,8 +59,16 @@
     .galerie-grid .photo.large { grid-column: span 2; aspect-ratio: 16/9; }
     .galerie-grid .photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 400ms var(--pt-ease-out); }
     .galerie-grid .photo:hover img { transform: scale(1.04); }
-    .galerie-grid .video-vertical { grid-row: span 2; border-radius: 16px; overflow: hidden; background: #000; }
+    .galerie-grid .video-vertical { grid-row: span 2; border-radius: 16px; overflow: hidden; background: #000; cursor: pointer; position: relative; }
     .galerie-grid .video-vertical video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .video-tap-hint {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.6); backdrop-filter: blur(8px); color: white;
+      font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px;
+      display: none; align-items: center; gap: 6px; white-space: nowrap;
+      transition: opacity 400ms; pointer-events: none;
+    }
+    @media (max-width: 768px) { .video-tap-hint { display: flex; } }
     section.projet-cta { padding: 80px 32px; background: var(--pt-bg-warm); }
     .projet-cta-inner { max-width: 1216px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
     .projet-cta-inner h2 { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -0.025em; line-height: 1.08; margin: 0; }
@@ -129,8 +137,9 @@
   <div class="galerie-head"><div class="ey">Galerie</div><h2>Les visuels du projet</h2></div>
   <div class="galerie-grid">
     <div class="photo large"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1778358006/P1002016_df6lb0.jpg" alt="Cirk'&toile — visuel principal"></div>
-    <div class="video-vertical">
-      <video src="https://res.cloudinary.com/deteat3at/video/upload/v1779567576/Cik_toile_V4_xmfuuf.mp4" autoplay muted loop playsinline></video>
+    <div class="video-vertical" id="videoWrap">
+      <video src="https://res.cloudinary.com/deteat3at/video/upload/v1779567576/Cik_toile_V4_xmfuuf.mp4" autoplay muted loop playsinline id="projVid"></video>
+      <div class="video-tap-hint" id="vidHint">▶ Son</div>
     </div>
     <div class="photo"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1778358006/P1002016_df6lb0.jpg" alt="Cirk'&toile — détail"></div>
     <div class="photo"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1778358006/P1002016_df6lb0.jpg" alt="Cirk'&toile — détail 2"></div>
@@ -176,6 +185,33 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
   }
 </script>
+<script>
+  /* Vidéo fullscreen + son au clic (mobile) */
+  const vid  = document.getElementById('projVid');
+  const hint = document.getElementById('vidHint');
+  if (vid) {
+    document.getElementById('videoWrap').addEventListener('click', function() {
+      vid.muted = false;
+      if (vid.webkitEnterFullscreen) {
+        vid.webkitEnterFullscreen();          /* iOS Safari */
+      } else if (vid.requestFullscreen) {
+        vid.requestFullscreen();
+      } else if (vid.webkitRequestFullscreen) {
+        vid.webkitRequestFullscreen();
+      }
+      if (hint) hint.style.opacity = '0';
+    });
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach(function(evt) {
+      document.addEventListener(evt, function() {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          vid.muted = true;
+          if (hint) hint.style.opacity = '1';
+        }
+      });
+    });
+  }
+</script>
+
 <script>
   /* scroll-hide nav */
   (function(){
