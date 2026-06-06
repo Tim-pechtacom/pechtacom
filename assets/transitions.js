@@ -31,154 +31,25 @@
     return g;
   }
 
-  /* ── Organic blob shape (array of {a, r} precomputed offsets) ── */
-  function genShape(nPts, irreg) {
-    var pts = [];
-    for (var i = 0; i < nPts; i++) {
-      pts.push({
-        a: (i / nPts) * Math.PI * 2 + rnd(-0.28, 0.28),
-        r: 1 + rnd(-irreg, irreg)
-      });
-    }
-    return pts;
-  }
-
-  /* Draw blob as smooth quadratic-bezier closed curve */
-  function drawBlob(ctx, x, y, size, shape) {
-    if (size < 1) return;
-    var n = shape.length;
-    var pts = [];
-    for (var i = 0; i < n; i++) {
-      pts.push({
-        x: x + Math.cos(shape[i].a) * size * shape[i].r,
-        y: y + Math.sin(shape[i].a) * size * shape[i].r
-      });
-    }
-    ctx.beginPath();
-    ctx.moveTo((pts[n-1].x + pts[0].x)/2, (pts[n-1].y + pts[0].y)/2);
-    for (var j = 0; j < n; j++) {
-      var cur = pts[j], nxt = pts[(j+1) % n];
-      ctx.quadraticCurveTo(cur.x, cur.y, (cur.x+nxt.x)/2, (cur.y+nxt.y)/2);
-    }
-    ctx.closePath();
-  }
-
-  /* ── Splash fingers — highly variable lengths ── */
-  function genFingers(n) {
-    var fingers = [], offset = rnd(0, Math.PI*2/n);
-    for (var i = 0; i < n; i++) {
-      fingers.push({
-        angle:  offset + (i/n)*Math.PI*2 + rnd(-0.38, 0.38),
-        height: rnd(0.03, 0.42),   /* huge range: short stub to very long */
-        width:  rnd(0.006, 0.024),
-        delay:  rnd(0, 0.14),
-        dur:    rnd(0.28, 0.62)
-      });
-    }
-    return fingers;
-  }
-
-  /* ── Patches that fly out and cover the screen ── */
-  function genPatches(cx, cy) {
-    var w = window.innerWidth, h = window.innerHeight;
-    var maxDim = Math.max(w, h);
-    var patches = [];
-
-    /* Random patches spread across the whole screen */
-    for (var i = 0; i < 30; i++) {
-      var ts = rnd(0, 0.38);
-      var te = ts + rnd(0.08, 0.22);
-      patches.push({
-        tx: rnd(0, w), ty: rnd(0, h),
-        maxSize:     maxDim * rnd(0.13, 0.30),
-        travelStart: ts, travelEnd: te,
-        growDur:     rnd(0.18, 0.38),
-        shape: genShape(Math.round(rnd(8, 15)), rnd(0.22, 0.52))
-      });
-    }
-
-    /* Anchor patches at screen corners & edges so coverage is guaranteed */
-    var anchors = [
-      [rnd(0,w*0.2),      rnd(0,h*0.2)],
-      [rnd(w*0.8,w),      rnd(0,h*0.2)],
-      [rnd(0,w*0.2),      rnd(h*0.8,h)],
-      [rnd(w*0.8,w),      rnd(h*0.8,h)],
-      [rnd(w*0.35,w*0.65),rnd(0,h*0.15)],
-      [rnd(w*0.35,w*0.65),rnd(h*0.85,h)],
-      [rnd(0,w*0.15),     rnd(h*0.35,h*0.65)],
-      [rnd(w*0.85,w),     rnd(h*0.35,h*0.65)]
-    ];
-    anchors.forEach(function (pt) {
-      var ts = rnd(0, 0.28), te = ts + rnd(0.10, 0.20);
-      patches.push({
-        tx: pt[0], ty: pt[1],
-        maxSize:     maxDim * rnd(0.20, 0.36),
-        travelStart: ts, travelEnd: te,
-        growDur:     rnd(0.18, 0.32),
-        shape: genShape(Math.round(rnd(9, 14)), rnd(0.25, 0.48))
-      });
-    });
-
-    return patches;
-  }
-
   /* ══════════════════════════════════════════
-     EXIT — fingers + flying blobs fill screen
+     EXIT — inverse du splashIn :
+     disque de gradient grandit depuis le clic
      ══════════════════════════════════════════ */
   function splashOut(cx, cy, onNav) {
     var c   = mkCanvas();
     var ctx = c.getContext('2d');
     var R   = coverR(cx, cy);
     var w   = c.width, h = c.height;
-
-    var fingers = genFingers(Math.round(rnd(9, 16)));
-    var patches = genPatches(cx, cy);
-    var DUR     = rnd(860, 1020);
-    var t0 = null, navDone = false;
+    var DUR = 680, t0 = null, navDone = false;
 
     function tick(now) {
       if (!t0) t0 = now;
       var t = Math.min((now - t0) / DUR, 1);
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = mkGrad(ctx, cx, cy, R * 1.4);
-
-      /* ── Patches: fly from click → target, then grow ── */
-      for (var i = 0; i < patches.length; i++) {
-        var p = patches[i];
-        if (t < p.travelStart) continue;
-
-        var tp = Math.min((t - p.travelStart) / Math.max(p.travelEnd - p.travelStart, 0.01), 1);
-        var bx = cx + (p.tx - cx) * eo3(tp);
-        var by = cy + (p.ty - cy) * eo3(tp);
-
-        /* Grow once arrived */
-        var gp = tp >= 1 ? Math.min((t - p.travelEnd) / p.growDur, 1) : 0;
-        var size = p.maxSize * eo4(gp) + (tp < 1 ? 6 : 0);
-
-        drawBlob(ctx, bx, by, size, p.shape);
-        ctx.fill();
-      }
-
-      /* ── Fingers: burst from click point, first 40% of animation ── */
-      if (t < 0.40) {
-        var fp = t / 0.40;
-        for (var j = 0; j < fingers.length; j++) {
-          var f  = fingers[j];
-          var ft = (fp - f.delay) / f.dur;
-          if (ft <= 0 || ft >= 1) continue;
-          var fh = R * f.height * Math.sin(ft * Math.PI);
-          var fw = R * f.width;
-          if (fh < 1) continue;
-          ctx.save();
-          ctx.translate(cx + Math.cos(f.angle)*fh*0.5, cy + Math.sin(f.angle)*fh*0.5);
-          ctx.rotate(f.angle + Math.PI/2);
-          ctx.beginPath();
-          ctx.ellipse(0, 0, Math.max(1, fw), Math.max(1, fh*0.52), 0, 0, Math.PI*2);
-          ctx.fill();
-          ctx.restore();
-        }
-      }
-
+      ctx.fillStyle = mkGrad(ctx, cx, cy, R);
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * eo3(t), 0, Math.PI * 2);
+      ctx.fill();
       if (!navDone && t > 0.87) { navDone = true; onNav(); }
       if (t < 1) requestAnimationFrame(tick);
     }
