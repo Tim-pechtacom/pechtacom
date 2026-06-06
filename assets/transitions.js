@@ -78,9 +78,52 @@
     return fingers;
   }
 
+  /* ── Patches that fly out and cover the screen ── */
+  function genPatches(cx, cy) {
+    var w = window.innerWidth, h = window.innerHeight;
+    var maxDim = Math.max(w, h);
+    var patches = [];
+
+    /* Random patches spread across the whole screen */
+    for (var i = 0; i < 30; i++) {
+      var ts = rnd(0, 0.38);
+      var te = ts + rnd(0.08, 0.22);
+      patches.push({
+        tx: rnd(0, w), ty: rnd(0, h),
+        maxSize:     maxDim * rnd(0.13, 0.30),
+        travelStart: ts, travelEnd: te,
+        growDur:     rnd(0.18, 0.38),
+        shape: genShape(Math.round(rnd(8, 15)), rnd(0.22, 0.52))
+      });
+    }
+
+    /* Anchor patches at screen corners & edges so coverage is guaranteed */
+    var anchors = [
+      [rnd(0,w*0.2),      rnd(0,h*0.2)],
+      [rnd(w*0.8,w),      rnd(0,h*0.2)],
+      [rnd(0,w*0.2),      rnd(h*0.8,h)],
+      [rnd(w*0.8,w),      rnd(h*0.8,h)],
+      [rnd(w*0.35,w*0.65),rnd(0,h*0.15)],
+      [rnd(w*0.35,w*0.65),rnd(h*0.85,h)],
+      [rnd(0,w*0.15),     rnd(h*0.35,h*0.65)],
+      [rnd(w*0.85,w),     rnd(h*0.35,h*0.65)]
+    ];
+    anchors.forEach(function (pt) {
+      var ts = rnd(0, 0.28), te = ts + rnd(0.10, 0.20);
+      patches.push({
+        tx: pt[0], ty: pt[1],
+        maxSize:     maxDim * rnd(0.20, 0.36),
+        travelStart: ts, travelEnd: te,
+        growDur:     rnd(0.18, 0.32),
+        shape: genShape(Math.round(rnd(9, 14)), rnd(0.25, 0.48))
+      });
+    });
+
+    return patches;
+  }
+
   /* ══════════════════════════════════════════
-     EXIT — blob organique grossit depuis le clic
-     (inverse du splashIn : remplit au lieu de percer)
+     EXIT — fingers + flying blobs fill screen
      ══════════════════════════════════════════ */
   function splashOut(cx, cy, onNav) {
     var c   = mkCanvas();
@@ -88,9 +131,9 @@
     var R   = coverR(cx, cy);
     var w   = c.width, h = c.height;
 
-    var shape   = genShape(Math.round(rnd(14, 20)), rnd(0.12, 0.24));
     var fingers = genFingers(Math.round(rnd(9, 16)));
-    var DUR     = 720;
+    var patches = genPatches(cx, cy);
+    var DUR     = rnd(860, 1020);
     var t0 = null, navDone = false;
 
     function tick(now) {
@@ -99,11 +142,24 @@
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = mkGrad(ctx, cx, cy, R * 1.4);
 
-      /* Blob principal : grossit depuis le clic jusqu'à couvrir l'écran */
-      drawBlob(ctx, cx, cy, R * 1.05 * eo3(t), shape);
-      ctx.fill();
+      /* ── Patches: fly from click → target, then grow ── */
+      for (var i = 0; i < patches.length; i++) {
+        var p = patches[i];
+        if (t < p.travelStart) continue;
 
-      /* Doigts : jaillissent pendant les premiers 40% */
+        var tp = Math.min((t - p.travelStart) / Math.max(p.travelEnd - p.travelStart, 0.01), 1);
+        var bx = cx + (p.tx - cx) * eo3(tp);
+        var by = cy + (p.ty - cy) * eo3(tp);
+
+        /* Grow once arrived */
+        var gp = tp >= 1 ? Math.min((t - p.travelEnd) / p.growDur, 1) : 0;
+        var size = p.maxSize * eo4(gp) + (tp < 1 ? 6 : 0);
+
+        drawBlob(ctx, bx, by, size, p.shape);
+        ctx.fill();
+      }
+
+      /* ── Fingers: burst from click point, first 40% of animation ── */
       if (t < 0.40) {
         var fp = t / 0.40;
         for (var j = 0; j < fingers.length; j++) {
