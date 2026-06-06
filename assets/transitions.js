@@ -50,22 +50,6 @@
     return spikes;
   }
 
-  /* ── Droplet config (randomised per click) ── */
-  function genDroplets(n, baseR, maxH) {
-    var drops = [];
-    for (var i = 0; i < n; i++) {
-      drops.push({
-        angle:   rnd(0, Math.PI * 2),
-        initR:   (baseR + maxH) * rnd(0.65, 1.15),
-        vel:     rnd(0.18, 0.55),      /* outward speed (fraction of R per unit time) */
-        grav:    rnd(0.15, 0.55),      /* downward acceleration */
-        size:    rnd(2.5, 9),
-        delay:   rnd(0.15, 0.45),      /* when it appears (fraction of splash phase) */
-        life:    rnd(0.35, 0.70)       /* how long it lives (fraction of splash phase) */
-      });
-    }
-    return drops;
-  }
 
   /* ══════════════════════════════════════════
      EXIT — organic splash from click point
@@ -79,7 +63,7 @@
     var nSpikes  = Math.round(rnd(6, 11));
     var maxH     = R * rnd(0.22, 0.32);
     var spikes   = genSpikes(nSpikes, R * 0.12, maxH);
-    var drops    = genDroplets(Math.round(rnd(10, 20)), R * 0.12, maxH);
+
     var DUR      = rnd(680, 820);
     var SPLASH   = 0.58;    /* fraction of DUR spent on splash phase */
     var t0 = null, navDone = false;
@@ -92,7 +76,7 @@
 
       if (t < SPLASH) {
         var p     = t / SPLASH;            /* 0→1 through splash phase */
-        var baseR = R * 0.10 * Math.min(p * 4, 1);   /* base circle: grows fast */
+        var baseR = R * 0.02 * Math.min(p * 4, 1);   /* base circle: grows fast */
 
         /* ── Base circle ── */
         ctx.beginPath();
@@ -122,33 +106,12 @@
           ctx.restore();
         }
 
-        /* ── Droplets with gravity ── */
-        for (var j = 0; j < drops.length; j++) {
-          var dr = drops[j];
-          if (p < dr.delay) continue;
-          var dt = (p - dr.delay);
-          if (dt > dr.life) continue;
-
-          var frac  = dt / dr.life;
-          var alpha = 1 - Math.pow(frac, 1.5);
-          var dist2 = dr.initR + dr.vel * R * dt * 2.2;
-          var gravY = 0.5 * dr.grav * dt * dt * R * 3.5;
-          var dSize = dr.size * (1 - frac * 0.6);
-
-          ctx.globalAlpha = Math.max(0, alpha);
-          ctx.beginPath();
-          ctx.arc(cx + Math.cos(dr.angle) * dist2,
-                  cy + Math.sin(dr.angle) * dist2 + gravY,
-                  Math.max(0.5, dSize), 0, Math.PI * 2);
-          ctx.fill();
-          ctx.globalAlpha = 1;
-        }
 
       } else {
         /* ── Rapid radial fill ── */
         var p2 = eo4((t - SPLASH) / (1 - SPLASH));
         ctx.beginPath();
-        ctx.arc(cx, cy, R * 0.10 + (R * 0.92) * p2, 0, Math.PI * 2);
+        ctx.arc(cx, cy, R * 0.02 + (R * 0.98) * p2, 0, Math.PI * 2);
         ctx.fill();
 
         if (!navDone && p2 > 0.88) { navDone = true; onNav(); }
