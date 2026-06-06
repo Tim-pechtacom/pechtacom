@@ -231,4 +231,12 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', splashIn);
   else splashIn();
 
+  /* ── bfcache restore (retour arrière) ── */
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    transitioning = false;
+    document.querySelectorAll('canvas[aria-hidden]').forEach(function (c) { c.remove(); });
+    splashIn();
+  });
+
 }());
