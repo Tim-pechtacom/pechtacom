@@ -1,87 +1,157 @@
 (function () {
   'use strict';
 
-  /* Inject the splash overlay into the page */
-  var overlay = document.createElement('div');
-  overlay.setAttribute('aria-hidden', 'true');
-  overlay.style.cssText = [
-    'position:fixed', 'inset:0', 'z-index:9999',
-    'pointer-events:none', 'overflow:hidden'
-  ].join(';');
+  var N_SPIKES  = 8;   // crown spikes
+  var N_DROPS   = N_SPIKES;
+  var transitioning = false;
 
-  var blob = document.createElement('div');
-  blob.style.cssText = [
-    'position:absolute',
-    'width:60px', 'height:60px',
-    'border-radius:50%',
-    'background:linear-gradient(135deg,#FFDA00 0%,#FF5408 52%,#FF003D 100%)',
-    'transform:scale(0)',
-    'will-change:transform'
-  ].join(';');
-
-  overlay.appendChild(blob);
-  document.body.appendChild(overlay);
-
-  /* Calculate the scale needed to cover the screen from a given point */
-  function coverScale(cx, cy) {
-    var corners = [
-      [0, 0], [window.innerWidth, 0],
-      [0, window.innerHeight], [window.innerWidth, window.innerHeight]
-    ];
-    var maxDist = Math.max.apply(null, corners.map(function (c) {
-      return Math.sqrt(Math.pow(c[0] - cx, 2) + Math.pow(c[1] - cy, 2));
-    }));
-    return Math.ceil(maxDist / 30) + 4; /* 30 = blob radius (60px / 2) */
+  /* Pech'tacom gradient */
+  function mkGrad(ctx, w, h) {
+    var g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0,    '#FFDA00');
+    g.addColorStop(0.52, '#FF5408');
+    g.addColorStop(1,    '#FF003D');
+    return g;
   }
 
-  /* Reveal: blob shrinks away to uncover the new page */
-  function reveal() {
-    var cx = window.innerWidth / 2;
-    var cy = window.innerHeight / 2;
-    var sc = coverScale(cx, cy);
-
-    blob.style.transition = 'none';
-    blob.style.borderRadius = '50%';
-    blob.style.top  = (cy - 30) + 'px';
-    blob.style.left = (cx - 30) + 'px';
-    blob.style.transform = 'scale(' + sc + ')';
-
-    /* Double rAF ensures the covered state is painted before animating */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        blob.style.transition = 'transform 680ms cubic-bezier(0.22, 1, 0.36, 1)';
-        blob.style.transform = 'scale(0)';
-      });
-    });
+  /* Radius needed to cover screen from (cx, cy) */
+  function coverR(cx, cy) {
+    var w = window.innerWidth, h = window.innerHeight;
+    return Math.max(
+      Math.hypot(cx, cy),
+      Math.hypot(w - cx, cy),
+      Math.hypot(cx, h - cy),
+      Math.hypot(w - cx, h - cy)
+    );
   }
 
-  /* Cover: blob grows from the click point to cover the page */
-  function cover(cx, cy, cb) {
-    var sc = coverScale(cx, cy);
+  function eo2(t) { return 1 - (1-t)*(1-t); }
+  function eo3(t) { return 1 - Math.pow(1-t, 3); }
+  function ei3(t) { return t * t * t; }
 
-    blob.style.transition = 'none';
-    blob.style.top  = (cy - 30) + 'px';
-    blob.style.left = (cx - 30) + 'px';
-    /* Start as an organic blob shape for the "splash" feel */
-    blob.style.borderRadius = '60% 40% 55% 45% / 50% 60% 40% 50%';
-    blob.style.transform = 'scale(0)';
-
-    requestAnimationFrame(function () {
-      blob.style.transition = [
-        'transform 560ms cubic-bezier(0.77, 0, 0.18, 1)',
-        'border-radius 420ms ease'
-      ].join(',');
-      blob.style.transform = 'scale(' + sc + ')';
-      blob.style.borderRadius = '50%';
-      setTimeout(cb, 560);
-    });
+  function mkCanvas() {
+    var c = document.createElement('canvas');
+    c.setAttribute('aria-hidden', 'true');
+    c.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;';
+    c.width  = window.innerWidth;
+    c.height = window.innerHeight;
+    document.body.appendChild(c);
+    return c;
   }
 
-  /* Intercept internal link clicks */
+  /* ─────────────────────────────────────────────
+     EXIT — splash crown growing from click point,
+     then rapid fill to cover screen
+     ───────────────────────────────────────────── */
+  function splashOut(cx, cy, onNav) {
+    var c   = mkCanvas();
+    var ctx = c.getContext('2d');
+    var R   = coverR(cx, cy);
+    var DUR = 700;
+    var t0  = null;
+    var navDone = false;
+
+    function tick(now) {
+      if (!t0) t0 = now;
+      var t = Math.min((now - t0) / DUR, 1);
+      var w = c.width, h = c.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = mkGrad(ctx, w, h);
+
+      if (t < 0.60) {
+        /* ── Phase 1: splash crown ── */
+        var p  = eo2(t / 0.60);
+        var br = R * 0.12 * p;                               /* base circle radius */
+        var sh = R * 0.28 * Math.sin(t / 0.60 * Math.PI);   /* spike height, 0→max→0 */
+
+        /* Crown polygon */
+        ctx.beginPath();
+        for (var i = 0; i <= N_SPIKES * 2; i++) {
+          var a = (i / (N_SPIKES * 2)) * Math.PI * 2 - Math.PI / 2;
+          var r = (i % 2 === 0) ? br + sh : br * 0.68;
+          if (i === 0) ctx.moveTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r);
+          else          ctx.lineTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r);
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        /* Droplets flying off spike tips */
+        if (p > 0.38) {
+          var dp = Math.min((p - 0.38) / 0.62, 1);
+          ctx.beginPath();
+          for (var j = 0; j < N_DROPS; j++) {
+            var da   = (j / N_DROPS) * Math.PI * 2 - Math.PI / 2 + (Math.PI / N_DROPS);
+            var dist = (br + sh) * (1.06 + dp * 0.70);
+            var dr   = Math.max(0, br * 0.16 * (1 - dp * 1.05));
+            if (dr < 0.5) continue;
+            var ddx = cx + Math.cos(da) * dist;
+            var ddy = cy + Math.sin(da) * dist;
+            ctx.moveTo(ddx + dr, ddy);
+            ctx.arc(ddx, ddy, dr, 0, Math.PI * 2);
+          }
+          ctx.fill();
+        }
+
+      } else {
+        /* ── Phase 2: fast radial fill ── */
+        var p2    = ei3((t - 0.60) / 0.40);
+        var baseR = R * 0.12;                       /* pick up where crown left off */
+        ctx.beginPath();
+        ctx.arc(cx, cy, baseR + (R - baseR) * p2, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (!navDone && p2 > 0.90) {
+          navDone = true;
+          onNav();
+        }
+      }
+
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ─────────────────────────────────────────────
+     ENTER — full gradient cover shrinks away
+     from center to reveal the new page
+     ───────────────────────────────────────────── */
+  function splashIn() {
+    var c   = mkCanvas();
+    var ctx = c.getContext('2d');
+    var cx  = window.innerWidth  / 2;
+    var cy  = window.innerHeight / 2;
+    var R   = coverR(cx, cy);
+    var DUR = 680;
+    var t0  = null;
+
+    function tick(now) {
+      if (!t0) t0 = now;
+      var t = Math.min((now - t0) / DUR, 1);
+      var w = c.width, h = c.height;
+      ctx.clearRect(0, 0, w, h);
+
+      /* Draw the full gradient */
+      ctx.fillStyle = mkGrad(ctx, w, h);
+      ctx.fillRect(0, 0, w, h);
+
+      /* Punch a growing hole to reveal the page */
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * eo3(t), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+
+      if (t < 1) requestAnimationFrame(tick);
+      else        c.remove();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ── Intercept internal link clicks ── */
   document.addEventListener('click', function (e) {
+    if (transitioning) return;
     var link = e.target.closest('a[href]');
     if (!link) return;
-
     var href = link.getAttribute('href');
     if (!href
       || href.charAt(0) === '#'
@@ -91,17 +161,17 @@
       || link.target === '_blank') return;
 
     e.preventDefault();
-    var cx = e.clientX, cy = e.clientY;
-    cover(cx, cy, function () {
+    transitioning = true;
+    splashOut(e.clientX, e.clientY, function () {
       window.location.href = href;
     });
   });
 
-  /* Run reveal when DOM is ready */
+  /* ── Reveal animation on every page load ── */
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', reveal);
+    document.addEventListener('DOMContentLoaded', splashIn);
   } else {
-    reveal();
+    splashIn();
   }
 
 }());
