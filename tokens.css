@@ -205,3 +205,19 @@ form button[type="submit"]:hover:not(:disabled) {
   background-clip: text;
   color: transparent;
 }
+
+/* ── Italiques animés : dégradé glissant sur tous les <em> ── */
+em {
+  font-style: italic;
+  background: linear-gradient(135deg, #FF003D, #FF5408, #FFDA00, #FF5408, #FF003D);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pt-em-flow 10s ease-in-out infinite;
+}
+@keyframes pt-em-flow {
+  0%   { background-position: 0% center; }
+  50%  { background-position: 150% center; }
+  100% { background-position: 300% center; }
+}
