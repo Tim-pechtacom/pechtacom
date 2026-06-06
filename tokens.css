@@ -138,6 +138,58 @@ h1, h2, h3, h4, h5, h6, .pt-title {
   text-wrap: balance;
 }
 
+/* ============================================================
+   GLOBAL BUTTON HOVER EFFECTS
+   Applied site-wide via tokens.css
+   ============================================================ */
+
+/* Nav CTA "Brief express →" */
+.nav .cta {
+  transition: background 180ms var(--pt-ease-out), transform 160ms var(--pt-ease-out), box-shadow 180ms;
+}
+.nav .cta:hover {
+  background: var(--pt-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -6px rgba(255,0,61,.45);
+}
+
+/* Boutons principaux (rose) */
+a.primary, button.primary {
+  transition: background 180ms var(--pt-ease-out), transform 160ms var(--pt-ease-out), box-shadow 180ms;
+}
+a.primary:hover, button.primary:hover {
+  background: var(--pt-accent-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -8px rgba(255,0,61,.5) !important;
+}
+
+/* Boutons fantôme (contour noir) */
+a.ghost, button.ghost {
+  transition: background 180ms var(--pt-ease-out), color 180ms, transform 160ms var(--pt-ease-out);
+}
+a.ghost:hover, button.ghost:hover {
+  background: var(--pt-noir) !important;
+  color: white !important;
+  transform: translateY(-2px);
+}
+
+/* CTA mobile menu */
+a.mobile-cta {
+  transition: background 180ms var(--pt-ease-out), transform 160ms var(--pt-ease-out);
+}
+a.mobile-cta:hover {
+  background: var(--pt-accent-hover);
+  transform: translateY(-2px);
+}
+
+/* Boutons de soumission de formulaires */
+form button[type="submit"] {
+  transition: background 180ms var(--pt-ease-out), transform 160ms var(--pt-ease-out);
+}
+form button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
 /* utility classes for fast prototyping */
 .pt-eyebrow {
   font-family: var(--pt-font-title);
