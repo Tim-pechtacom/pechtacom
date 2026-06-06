@@ -29,7 +29,7 @@
     .mobile-links a { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(36px, 10vw, 56px); letter-spacing: -0.03em; color: white; text-decoration: none; padding: 10px 0; transition: color 160ms; }
     .mobile-links a:hover { color: var(--pt-rose); }
     .mobile-cta { margin-top: 32px; background: var(--pt-rose); color: white; font-weight: 700; font-size: 16px; padding: 16px 32px; border-radius: 999px; text-decoration: none; }
-    .hero { height: 90vh; min-height: 560px; position: relative; overflow: hidden; display: flex; align-items: flex-end; background-image: url('https://res.cloudinary.com/deteat3at/image/upload/v1778358006/P1002016_df6lb0.jpg'); background-size: cover; background-position: center; }
+    .hero { height: 90vh; min-height: 560px; position: relative; overflow: hidden; display: flex; align-items: flex-end; background-image: url('https://res.cloudinary.com/deteat3at/image/upload/v1780146758/P1013185_wkhe10.jpg'); background-size: cover; background-position: center; }
     .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(38,36,38,.85) 0%, rgba(38,36,38,.2) 50%, transparent 100%); }
     .hero-content { position: relative; z-index: 1; padding: 56px max(32px, calc((100vw - 1216px) / 2 + 32px)); width: 100%; }
     .hero-content .back-link { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.7); text-decoration: none; margin-bottom: 32px; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); transition: color 160ms, border-color 160ms; }
@@ -67,6 +67,9 @@
     .projet-cta-inner a.ghost { color: var(--pt-noir); font-weight: 700; padding: 16px 26px; border-radius: 999px; text-decoration: none; border: 2px solid var(--pt-noir); }
     footer.mini { padding: 24px 32px; max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 13px; color: var(--pt-text-muted); border-top: 1px solid var(--pt-border); }
     footer.mini a { color: var(--pt-text-muted); text-decoration: none; }
+    @media (max-width: 1024px) {
+      .galerie-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 768px) {
       .nav-wrap { padding: 10px 16px 0; } .nav { padding: 2px 12px 2px 16px; } .nav .links { display: none; } .nav .cta { display: none; } .menu-toggle { display: flex; }
       .hero-content { padding: 40px 16px; } section.intro { padding: 56px 16px; } .intro-grid { grid-template-columns: 1fr; gap: 40px; } .intro-aside { position: static; }
@@ -181,9 +184,13 @@
 </section>
 <section class="galerie">
   <div class="galerie-head"><div class="ey">Galerie</div><h2>Les visuels du projet</h2></div>
-  <div class="galerie-grid">
-    <div class="photo large"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1778358006/P1002016_df6lb0.jpg" alt="Bomb Squad — ambiance escape game"></div>
-    <div class="photo"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1778358006/P1002016_df6lb0.jpg" alt="Bomb Squad — détail décor"></div>
+    <div class="galerie-grid">
+    <div class="photo-4-3"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780146758/P1013185_wkhe10.jpg" alt="Bomb Squad"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780146777/P1023548_hdjdyu.jpg" alt="Bomb Squad"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780146746/P1013246_biol0i.jpg" alt="Bomb Squad"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780146757/P1013373_hiogzs.jpg" alt="Bomb Squad"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780146754/P1013346_yk2hvm.jpg" alt="Bomb Squad"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780146754/P1013284_nzfxzc.jpg" alt="Bomb Squad"></div>
   </div>
 </section>
 <section class="projet-cta">
