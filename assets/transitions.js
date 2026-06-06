@@ -3,15 +3,15 @@
 
   var transitioning = false;
 
-  /* ── Helpers ── */
-  function rnd(a, b)  { return a + Math.random() * (b - a); }
-  function eo3(t)     { return 1 - Math.pow(1 - t, 3); }
-  function eo4(t)     { return 1 - Math.pow(1 - t, 4); }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function eo2(t)    { return 1 - (1-t)*(1-t); }
+  function eo3(t)    { return 1 - Math.pow(1-t, 3); }
+  function eo4(t)    { return 1 - Math.pow(1-t, 4); }
 
   function coverR(cx, cy) {
     var w = window.innerWidth, h = window.innerHeight;
-    return Math.max(Math.hypot(cx, cy), Math.hypot(w-cx, cy),
-                    Math.hypot(cx, h-cy), Math.hypot(w-cx, h-cy));
+    return Math.max(Math.hypot(cx,cy), Math.hypot(w-cx,cy),
+                    Math.hypot(cx,h-cy), Math.hypot(w-cx,h-cy));
   }
 
   function mkCanvas() {
@@ -23,36 +23,107 @@
     return c;
   }
 
-  /* Radial gradient — warm at click point, rose at edges */
   function mkGrad(ctx, cx, cy, R) {
-    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.4);
-    g.addColorStop(0,    '#FFEF5E');
-    g.addColorStop(0.35, '#FF8C00');
-    g.addColorStop(0.75, '#FF3D00');
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+    g.addColorStop(0,    '#FFE040');
+    g.addColorStop(0.38, '#FF6500');
     g.addColorStop(1,    '#FF003D');
     return g;
   }
 
-  /* ── Spike config (randomised per click) ── */
-  function genSpikes(nSpikes, baseR, maxH) {
-    var spikes = [];
-    var rotOffset = rnd(0, (Math.PI * 2) / nSpikes);
-    for (var i = 0; i < nSpikes; i++) {
-      var baseAngle = rotOffset + (i / nSpikes) * Math.PI * 2;
-      spikes.push({
-        angle:     baseAngle + rnd(-0.25, 0.25),
-        maxH:      rnd(0.55, 1.0) * maxH,
-        width:     rnd(0.055, 0.13) * baseR,
-        phase0:    rnd(0, 0.18),       /* launch delay (fraction of splash phase) */
-        phaseLen:  rnd(0.55, 0.88)     /* how long the spike lasts */
+  /* ── Organic blob shape (array of {a, r} precomputed offsets) ── */
+  function genShape(nPts, irreg) {
+    var pts = [];
+    for (var i = 0; i < nPts; i++) {
+      pts.push({
+        a: (i / nPts) * Math.PI * 2 + rnd(-0.28, 0.28),
+        r: 1 + rnd(-irreg, irreg)
       });
     }
-    return spikes;
+    return pts;
   }
 
+  /* Draw blob as smooth quadratic-bezier closed curve */
+  function drawBlob(ctx, x, y, size, shape) {
+    if (size < 1) return;
+    var n = shape.length;
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      pts.push({
+        x: x + Math.cos(shape[i].a) * size * shape[i].r,
+        y: y + Math.sin(shape[i].a) * size * shape[i].r
+      });
+    }
+    ctx.beginPath();
+    ctx.moveTo((pts[n-1].x + pts[0].x)/2, (pts[n-1].y + pts[0].y)/2);
+    for (var j = 0; j < n; j++) {
+      var cur = pts[j], nxt = pts[(j+1) % n];
+      ctx.quadraticCurveTo(cur.x, cur.y, (cur.x+nxt.x)/2, (cur.y+nxt.y)/2);
+    }
+    ctx.closePath();
+  }
+
+  /* ── Splash fingers — highly variable lengths ── */
+  function genFingers(n) {
+    var fingers = [], offset = rnd(0, Math.PI*2/n);
+    for (var i = 0; i < n; i++) {
+      fingers.push({
+        angle:  offset + (i/n)*Math.PI*2 + rnd(-0.38, 0.38),
+        height: rnd(0.03, 0.42),   /* huge range: short stub to very long */
+        width:  rnd(0.006, 0.024),
+        delay:  rnd(0, 0.14),
+        dur:    rnd(0.28, 0.62)
+      });
+    }
+    return fingers;
+  }
+
+  /* ── Patches that fly out and cover the screen ── */
+  function genPatches(cx, cy) {
+    var w = window.innerWidth, h = window.innerHeight;
+    var maxDim = Math.max(w, h);
+    var patches = [];
+
+    /* Random patches spread across the whole screen */
+    for (var i = 0; i < 30; i++) {
+      var ts = rnd(0, 0.38);
+      var te = ts + rnd(0.08, 0.22);
+      patches.push({
+        tx: rnd(0, w), ty: rnd(0, h),
+        maxSize:     maxDim * rnd(0.13, 0.30),
+        travelStart: ts, travelEnd: te,
+        growDur:     rnd(0.18, 0.38),
+        shape: genShape(Math.round(rnd(8, 15)), rnd(0.22, 0.52))
+      });
+    }
+
+    /* Anchor patches at screen corners & edges so coverage is guaranteed */
+    var anchors = [
+      [rnd(0,w*0.2),      rnd(0,h*0.2)],
+      [rnd(w*0.8,w),      rnd(0,h*0.2)],
+      [rnd(0,w*0.2),      rnd(h*0.8,h)],
+      [rnd(w*0.8,w),      rnd(h*0.8,h)],
+      [rnd(w*0.35,w*0.65),rnd(0,h*0.15)],
+      [rnd(w*0.35,w*0.65),rnd(h*0.85,h)],
+      [rnd(0,w*0.15),     rnd(h*0.35,h*0.65)],
+      [rnd(w*0.85,w),     rnd(h*0.35,h*0.65)]
+    ];
+    anchors.forEach(function (pt) {
+      var ts = rnd(0, 0.28), te = ts + rnd(0.10, 0.20);
+      patches.push({
+        tx: pt[0], ty: pt[1],
+        maxSize:     maxDim * rnd(0.20, 0.36),
+        travelStart: ts, travelEnd: te,
+        growDur:     rnd(0.18, 0.32),
+        shape: genShape(Math.round(rnd(9, 14)), rnd(0.25, 0.48))
+      });
+    });
+
+    return patches;
+  }
 
   /* ══════════════════════════════════════════
-     EXIT — organic splash from click point
+     EXIT — fingers + flying blobs fill screen
      ══════════════════════════════════════════ */
   function splashOut(cx, cy, onNav) {
     var c   = mkCanvas();
@@ -60,123 +131,104 @@
     var R   = coverR(cx, cy);
     var w   = c.width, h = c.height;
 
-    var nSpikes  = Math.round(rnd(6, 11));
-    var maxH     = R * rnd(0.22, 0.32);
-    var spikes   = genSpikes(nSpikes, R * 0.12, maxH);
-
-    var DUR      = rnd(680, 820);
-    var SPLASH   = 0.58;    /* fraction of DUR spent on splash phase */
+    var fingers = genFingers(Math.round(rnd(9, 16)));
+    var patches = genPatches(cx, cy);
+    var DUR     = rnd(860, 1020);
     var t0 = null, navDone = false;
 
     function tick(now) {
       if (!t0) t0 = now;
       var t = Math.min((now - t0) / DUR, 1);
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = mkGrad(ctx, cx, cy, R);
+      ctx.fillStyle = mkGrad(ctx, cx, cy, R * 1.4);
 
-      if (t < SPLASH) {
-        var p     = t / SPLASH;            /* 0→1 through splash phase */
-        var baseR = R * 0.02 * Math.min(p * 4, 1);   /* base circle: grows fast */
+      /* ── Patches: fly from click → target, then grow ── */
+      for (var i = 0; i < patches.length; i++) {
+        var p = patches[i];
+        if (t < p.travelStart) continue;
 
-        /* ── Base circle ── */
-        ctx.beginPath();
-        ctx.arc(cx, cy, Math.max(baseR, 1), 0, Math.PI * 2);
+        var tp = Math.min((t - p.travelStart) / Math.max(p.travelEnd - p.travelStart, 0.01), 1);
+        var bx = cx + (p.tx - cx) * eo3(tp);
+        var by = cy + (p.ty - cy) * eo3(tp);
+
+        /* Grow once arrived */
+        var gp = tp >= 1 ? Math.min((t - p.travelEnd) / p.growDur, 1) : 0;
+        var size = p.maxSize * eo4(gp) + (tp < 1 ? 6 : 0);
+
+        drawBlob(ctx, bx, by, size, p.shape);
         ctx.fill();
+      }
 
-        /* ── Spikes (elongated ellipses pointing outward) ── */
-        for (var i = 0; i < spikes.length; i++) {
-          var sp  = spikes[i];
-          var sp_p = (p - sp.phase0) / sp.phaseLen;
-          if (sp_p <= 0 || sp_p >= 1) continue;
-
-          /* spike height follows a sine arch (rises then falls) */
-          var sH = sp.maxH * Math.sin(sp_p * Math.PI);
-          var sW = sp.width * Math.pow(Math.sin(sp_p * Math.PI), 0.4);
-          if (sH < 1) continue;
-
-          var dist = baseR + sH * 0.5;
+      /* ── Fingers: burst from click point, first 40% of animation ── */
+      if (t < 0.40) {
+        var fp = t / 0.40;
+        for (var j = 0; j < fingers.length; j++) {
+          var f  = fingers[j];
+          var ft = (fp - f.delay) / f.dur;
+          if (ft <= 0 || ft >= 1) continue;
+          var fh = R * f.height * Math.sin(ft * Math.PI);
+          var fw = R * f.width;
+          if (fh < 1) continue;
           ctx.save();
-          ctx.translate(cx + Math.cos(sp.angle) * dist,
-                        cy + Math.sin(sp.angle) * dist);
-          ctx.rotate(sp.angle + Math.PI / 2);
+          ctx.translate(cx + Math.cos(f.angle)*fh*0.5, cy + Math.sin(f.angle)*fh*0.5);
+          ctx.rotate(f.angle + Math.PI/2);
           ctx.beginPath();
-          ctx.ellipse(0, 0, Math.max(1, sW), Math.max(1, sH * 0.52 + baseR * 0.08),
-                      0, 0, Math.PI * 2);
+          ctx.ellipse(0, 0, Math.max(1, fw), Math.max(1, fh*0.52), 0, 0, Math.PI*2);
           ctx.fill();
           ctx.restore();
         }
-
-
-      } else {
-        /* ── Rapid radial fill ── */
-        var p2 = eo4((t - SPLASH) / (1 - SPLASH));
-        ctx.beginPath();
-        ctx.arc(cx, cy, R * 0.02 + (R * 0.98) * p2, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (!navDone && p2 > 0.88) { navDone = true; onNav(); }
       }
 
+      if (!navDone && t > 0.87) { navDone = true; onNav(); }
       if (t < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
   }
 
   /* ══════════════════════════════════════════
-     ENTER — full overlay recedes from centre
+     ENTER — gradient overlay recedes from centre
      ══════════════════════════════════════════ */
   function splashIn() {
     var c   = mkCanvas();
     var ctx = c.getContext('2d');
-    var cx  = window.innerWidth  / 2;
-    var cy  = window.innerHeight / 2;
+    var cx  = window.innerWidth/2, cy = window.innerHeight/2;
     var R   = coverR(cx, cy);
-    var DUR = 700;
-    var t0  = null;
+    var DUR = 680, t0 = null;
 
     function tick(now) {
       if (!t0) t0 = now;
       var t = Math.min((now - t0) / DUR, 1);
       var w = c.width, h = c.height;
       ctx.clearRect(0, 0, w, h);
-
       ctx.fillStyle = mkGrad(ctx, cx, cy, R);
       ctx.fillRect(0, 0, w, h);
-
       ctx.globalCompositeOperation = 'destination-out';
       ctx.beginPath();
-      ctx.arc(cx, cy, R * eo3(t), 0, Math.PI * 2);
+      ctx.arc(cx, cy, R * eo3(t), 0, Math.PI*2);
       ctx.fill();
       ctx.globalCompositeOperation = 'source-over';
-
       if (t < 1) requestAnimationFrame(tick);
-      else        c.remove();
+      else c.remove();
     }
     requestAnimationFrame(tick);
   }
 
-  /* ── Intercept internal navigation ── */
+  /* ── Click interception ── */
   document.addEventListener('click', function (e) {
     if (transitioning) return;
     var link = e.target.closest('a[href]');
     if (!link) return;
     var href = link.getAttribute('href');
-    if (!href || href.charAt(0) === '#' || href.indexOf('://') !== -1 ||
-        href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0 ||
-        link.target === '_blank') return;
-
+    if (!href || href.charAt(0)==='#' || href.indexOf('://')!==-1 ||
+        href.indexOf('mailto:')===0 || href.indexOf('tel:')===0 ||
+        link.target==='_blank') return;
     e.preventDefault();
     transitioning = true;
-    splashOut(e.clientX, e.clientY, function () {
-      window.location.href = href;
-    });
+    splashOut(e.clientX, e.clientY, function () { window.location.href = href; });
   });
 
-  /* ── Reveal on page load ── */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', splashIn);
-  } else {
-    splashIn();
-  }
+  /* ── Reveal on load ── */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', splashIn);
+  else splashIn();
 
 }());
