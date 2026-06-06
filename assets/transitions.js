@@ -186,27 +186,44 @@
   }
 
   /* ══════════════════════════════════════════
-     ENTER — gradient overlay recedes from centre
+     ENTER — miroir du splashOut :
+     trous organiques percent le gradient et révèlent la page
      ══════════════════════════════════════════ */
   function splashIn() {
     var c   = mkCanvas();
     var ctx = c.getContext('2d');
     var cx  = window.innerWidth/2, cy = window.innerHeight/2;
     var R   = coverR(cx, cy);
-    var DUR = 680, t0 = null;
+    var w   = c.width, h = c.height;
+    var patches = genPatches(cx, cy);
+    var DUR = rnd(860, 1020), t0 = null;
 
     function tick(now) {
       if (!t0) t0 = now;
       var t = Math.min((now - t0) / DUR, 1);
-      var w = c.width, h = c.height;
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = mkGrad(ctx, cx, cy, R);
-      ctx.fillRect(0, 0, w, h);
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * eo3(t), 0, Math.PI*2);
-      ctx.fill();
+
+      /* Fond gradient plein */
       ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = mkGrad(ctx, cx, cy, R * 1.4);
+      ctx.fillRect(0, 0, w, h);
+
+      /* Trous organiques qui percent le gradient */
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'black';
+      for (var i = 0; i < patches.length; i++) {
+        var p = patches[i];
+        if (t < p.travelStart) continue;
+        var tp = Math.min((t - p.travelStart) / Math.max(p.travelEnd - p.travelStart, 0.01), 1);
+        var bx = cx + (p.tx - cx) * eo3(tp);
+        var by = cy + (p.ty - cy) * eo3(tp);
+        var gp = tp >= 1 ? Math.min((t - p.travelEnd) / p.growDur, 1) : 0;
+        var size = p.maxSize * eo4(gp) + (tp < 1 ? 6 : 0);
+        drawBlob(ctx, bx, by, size, p.shape);
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = 'source-over';
+
       if (t < 1) requestAnimationFrame(tick);
       else c.remove();
     }
