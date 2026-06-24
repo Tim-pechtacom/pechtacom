@@ -41,8 +41,8 @@
   lbNext.setAttribute('aria-label', 'Suivant');
   lbNext.innerHTML = '&#8250;';
 
-  lbInner.appendChild(lbPrev);
   lbInner.appendChild(lbBody);
+  lbInner.appendChild(lbPrev);
   lbInner.appendChild(lbNext);
 
   /* ── Render ── */
