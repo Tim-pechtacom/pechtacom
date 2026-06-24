@@ -224,8 +224,24 @@ em {
 
 /* ── Lightbox : conteneur arrows + image côte à côte ── */
 .lb-inner {
-  display: flex; align-items: center; gap: 20px;
-  max-width: 96vw; max-height: 96vh;
+  display: flex; align-items: center; gap: 16px;
+  width: 100%; max-height: 96vh;
+  padding: 0 24px; box-sizing: border-box;
+}
+/* Override le max-width: 94vw défini dans chaque page */
+.lb-inner .lightbox-content {
+  flex: 1; min-width: 0;
+  max-width: none !important;
+  max-height: 90vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.lb-inner .lightbox-content img,
+.lb-inner .lightbox-content video {
+  max-width: 100% !important;
+  max-height: 88vh !important;
+  border-radius: 10px;
+  object-fit: contain;
+  display: block;
 }
 .lb-arrow {
   flex-shrink: 0;
