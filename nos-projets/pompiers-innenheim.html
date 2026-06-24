@@ -390,35 +390,7 @@
   <div class="lightbox-content" id="lightboxContent"></div>
 </div>
 
-<script>
-  (function(){
-    const lb     = document.getElementById('lightbox');
-    const lbBody = document.getElementById('lightboxContent');
-    const lbX    = document.getElementById('lightboxClose');
-
-    function lbOpen(src) {
-      lbBody.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = src; lbBody.appendChild(img);
-      lb.classList.add('open'); lb.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    }
-    function lbClose() {
-      lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-      setTimeout(function(){ lbBody.innerHTML = ''; }, 280);
-    }
-
-    document.querySelectorAll('.galerie-grid img').forEach(function(img) {
-      img.style.cursor = 'zoom-in';
-      img.addEventListener('click', function(){ lbOpen(img.src); });
-    });
-
-    lbX.addEventListener('click', lbClose);
-    lb.addEventListener('click', function(e){ if (e.target === lb) lbClose(); });
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') lbClose(); });
-  })();
-</script>
+<script src="../assets/lightbox.js"></script>
 
 <script src="../assets/transitions.js"></script>
 </body>
