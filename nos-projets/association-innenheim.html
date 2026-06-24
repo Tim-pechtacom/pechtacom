@@ -223,6 +223,14 @@
     .galerie-grid .photo-4-3         { aspect-ratio: 4/3; }
     .galerie-grid .photo-horizontale { aspect-ratio: 16/9; grid-column: span 2; }
     .galerie-grid .video-horizontale { aspect-ratio: 16/9; grid-column: span 2; background: #000; cursor: pointer; }
+    .galerie-grid .video-horizontale video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .galerie-grid .video-horizontale .play-btn {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.28); transition: background 200ms;
+    }
+    .galerie-grid .video-horizontale .play-btn svg { width: 64px; height: 64px; filter: drop-shadow(0 2px 8px rgba(0,0,0,.4)); }
+    .galerie-grid .video-horizontale:hover .play-btn { background: rgba(0,0,0,.12); }
+    .lightbox-content video { max-width: 94vw; max-height: 94vh; border-radius: 10px; display: block; }
     .galerie-grid .petite-photo img,
     .galerie-grid .photo-vertical img,
     .galerie-grid .photo-3-4 img,
@@ -305,9 +313,18 @@
 <section class="galerie">
   <div class="galerie-head">
     <div class="ey">Galerie</div>
-    <h2>Les affiches du projet</h2>
+    <h2>Vidéo &amp; affiches du projet</h2>
   </div>
   <div class="galerie-grid">
+    <div class="video-horizontale" data-video="https://res.cloudinary.com/deteat3at/video/upload/v1782340521/Pre%CC%81sentation_des_E_yu9mpc.mp4">
+      <video src="https://res.cloudinary.com/deteat3at/video/upload/v1782340521/Pre%CC%81sentation_des_E_yu9mpc.mp4" autoplay muted loop playsinline></video>
+      <div class="play-btn">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="32" fill="rgba(255,255,255,0.22)"/>
+          <polygon points="26,20 48,32 26,44" fill="white"/>
+        </svg>
+      </div>
+    </div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780503284/23_eaoa6t.png" alt="Association d'Innenheim"></div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780503282/20_kzisxy.png" alt="Association d'Innenheim"></div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1780503280/21_e2m7dz.png" alt="Association d'Innenheim"></div>
@@ -423,6 +440,9 @@
     document.querySelectorAll('.galerie-grid img').forEach(function(img) {
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', function(){ lbOpen(img.src, 'image'); });
+    });
+    document.querySelectorAll('.galerie-grid .video-horizontale[data-video]').forEach(function(el) {
+      el.addEventListener('click', function(){ lbOpen(el.dataset.video, 'video'); });
     });
 
     lbX.addEventListener('click', lbClose);
