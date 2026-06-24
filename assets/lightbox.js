@@ -6,7 +6,7 @@
   var lbX    = document.getElementById('lightboxClose');
   if (!lb || !lbBody) return;
 
-  var items   = [];  /* [{src, type:'image'|'video'}] in DOM order */
+  var items   = [];
   var current = 0;
   var lbVid   = null;
 
@@ -26,20 +26,26 @@
     }
   });
 
-  /* ── Arrow buttons (created dynamically) ── */
+  /* ── Structure : [prev] [content] [next] côte à côte ── */
+  var lbInner = document.createElement('div');
+  lbInner.className = 'lb-inner';
+  lb.insertBefore(lbInner, lbBody);
+
   var lbPrev = document.createElement('button');
   lbPrev.className = 'lb-arrow lb-prev';
   lbPrev.setAttribute('aria-label', 'Précédent');
   lbPrev.innerHTML = '&#8249;';
-  lb.appendChild(lbPrev);
 
   var lbNext = document.createElement('button');
   lbNext.className = 'lb-arrow lb-next';
   lbNext.setAttribute('aria-label', 'Suivant');
   lbNext.innerHTML = '&#8250;';
-  lb.appendChild(lbNext);
 
-  /* ── Render item at index ── */
+  lbInner.appendChild(lbPrev);
+  lbInner.appendChild(lbBody);
+  lbInner.appendChild(lbNext);
+
+  /* ── Render ── */
   function lbRender(idx) {
     var item = items[idx];
     if (lbVid) { lbVid.pause(); lbVid = null; }
@@ -55,8 +61,8 @@
       lbBody.appendChild(img);
     }
 
-    lbPrev.style.opacity = idx > 0                  ? '1' : '0.2';
-    lbNext.style.opacity = idx < items.length - 1   ? '1' : '0.2';
+    lbPrev.style.opacity      = idx > 0                ? '1'    : '0.25';
+    lbNext.style.opacity      = idx < items.length - 1 ? '1'    : '0.25';
     lbPrev.style.pointerEvents = idx > 0                ? 'auto' : 'none';
     lbNext.style.pointerEvents = idx < items.length - 1 ? 'auto' : 'none';
   }
@@ -77,15 +83,15 @@
   }
 
   function lbGo(dir) {
-    var next = current + dir;
-    if (next >= 0 && next < items.length) { current = next; lbRender(current); }
+    var n = current + dir;
+    if (n >= 0 && n < items.length) { current = n; lbRender(current); }
   }
 
   /* ── Controls ── */
   lbPrev.addEventListener('click', function (e) { e.stopPropagation(); lbGo(-1); });
   lbNext.addEventListener('click', function (e) { e.stopPropagation(); lbGo(+1); });
   lbX.addEventListener('click', lbClose);
-  lb.addEventListener('click', function (e) { if (e.target === lb) lbClose(); });
+  lb.addEventListener('click', function (e) { if (e.target === lb || e.target === lbInner) lbClose(); });
 
   document.addEventListener('keydown', function (e) {
     if (!lb.classList.contains('open')) return;
