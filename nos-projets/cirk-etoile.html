@@ -60,7 +60,13 @@
     .galerie-grid .photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 400ms var(--pt-ease-out); }
     .galerie-grid .photo:hover img { transform: scale(1.04); }
     .galerie-grid .video-vertical { grid-row: span 2; border-radius: 16px; overflow: hidden; background: #000; cursor: pointer; position: relative; }
-    .galerie-grid .video-vertical video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .galerie-grid .video-vertical video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .galerie-grid .video-vertical .play-btn {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.22); transition: background 200ms;
+    }
+    .galerie-grid .video-vertical .play-btn svg { width: 56px; height: 56px; filter: drop-shadow(0 2px 8px rgba(0,0,0,.4)); }
+    .galerie-grid .video-vertical:hover .play-btn { background: rgba(0,0,0,.08); }
     .video-tap-hint {
       position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
       background: rgba(0,0,0,.6); backdrop-filter: blur(8px); color: white;
@@ -194,6 +200,12 @@
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1779227448/9_sqbh22.jpg" alt="Cirk'&toile — visuel principal"></div>
     <div class="video-vertical" id="videoWrap" data-video="https://res.cloudinary.com/deteat3at/video/upload/v1779567576/Cik_toile_V4_xmfuuf.mp4">
       <video src="https://res.cloudinary.com/deteat3at/video/upload/v1779567576/Cik_toile_V4_xmfuuf.mp4" autoplay muted loop playsinline id="projVid"></video>
+      <div class="play-btn">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="32" fill="rgba(255,255,255,0.22)"/>
+          <polygon points="26,20 48,32 26,44" fill="white"/>
+        </svg>
+      </div>
       <div class="video-tap-hint" id="vidHint">▶ Regarder</div>
     </div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1779227449/8_nxwxkc.jpg" alt="Cirk'&toile — détail"></div>
