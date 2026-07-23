@@ -12,7 +12,7 @@
 
   /* ── Collect gallery items in DOM order ── */
   document.querySelectorAll('.galerie-grid > *').forEach(function (el) {
-    var isVideo = el.classList.contains('video-horizontale') && el.dataset.video;
+    var isVideo = !!el.dataset.video;
     var img     = el.querySelector('img');
     if (isVideo) {
       var idx = items.length;
