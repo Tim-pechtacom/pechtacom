@@ -385,9 +385,14 @@
     </div>
   </div>
 
-  <div class="galerie-head">
+  <div class="galerie-head" id="galerieHead">
     <div class="ey">Galerie</div>
     <h2>Le reportage</h2>
+  </div>
+
+  <div class="galerie-head" id="videosHead" style="display:none">
+    <div class="ey">Vidéos</div>
+    <h2>Les vidéos du reportage</h2>
   </div>
 
   <div class="galerie-grid" id="sectionPhotos">
@@ -511,27 +516,35 @@
 <script>
   /* Filtre galerie */
   (function () {
-    var photos   = document.getElementById('sectionPhotos');
-    var vidHead  = document.getElementById('sectionVideoHead');
-    var videos   = document.getElementById('sectionVideos');
-    var btns     = document.querySelectorAll('.gf-btn');
+    var galerieHead = document.getElementById('galerieHead');
+    var videosHead  = document.getElementById('videosHead');
+    var photos      = document.getElementById('sectionPhotos');
+    var vidHead     = document.getElementById('sectionVideoHead');
+    var videos      = document.getElementById('sectionVideos');
+    var btns        = document.querySelectorAll('.gf-btn');
     btns.forEach(function (btn) {
       btn.addEventListener('click', function () {
         btns.forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
         var show = btn.dataset.show;
         if (show === 'all') {
-          photos.style.display  = '';
-          vidHead.style.display = '';
-          videos.style.display  = '';
+          galerieHead.style.display = '';
+          videosHead.style.display  = 'none';
+          photos.style.display      = '';
+          vidHead.style.display     = '';
+          videos.style.display      = '';
         } else if (show === 'photos') {
-          photos.style.display  = '';
-          vidHead.style.display = 'none';
-          videos.style.display  = 'none';
+          galerieHead.style.display = '';
+          videosHead.style.display  = 'none';
+          photos.style.display      = '';
+          vidHead.style.display     = 'none';
+          videos.style.display      = 'none';
         } else {
-          photos.style.display  = 'none';
-          vidHead.style.display = 'none';
-          videos.style.display  = '';
+          galerieHead.style.display = 'none';
+          videosHead.style.display  = '';
+          photos.style.display      = 'none';
+          vidHead.style.display     = 'none';
+          videos.style.display      = '';
         }
       });
     });
