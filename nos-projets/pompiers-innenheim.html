@@ -167,6 +167,27 @@
     .galerie-grid .photo-4-3:hover img,
     .galerie-grid .photo-horizontale:hover img { transform: scale(1.04); }
 
+    /* ── Vidéos verticales ── */
+    .galerie-sub-head { max-width: 1216px; margin: 48px auto 20px; display: flex; align-items: center; gap: 16px; }
+    .galerie-sub-head .ey { font-family: var(--pt-font-title); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-jaune); font-weight: 700; white-space: nowrap; }
+    .galerie-sub-head::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,.12); }
+    .video-grid { max-width: 1216px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .video-grid .video-clip { aspect-ratio: 9/16; overflow: hidden; border-radius: 16px; background: #111; cursor: pointer; position: relative; }
+    .video-grid .video-clip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .video-grid .video-clip .play-btn {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.28); transition: background 200ms; pointer-events: none;
+    }
+    .video-grid .video-clip .play-btn svg { width: 60px; height: 60px; filter: drop-shadow(0 2px 10px rgba(0,0,0,.5)); }
+    .video-grid .video-clip:hover .play-btn { background: rgba(0,0,0,.08); }
+    .video-tap-hint {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.6); backdrop-filter: blur(8px); color: white;
+      font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px;
+      display: none; align-items: center; gap: 6px; white-space: nowrap; pointer-events: none;
+    }
+    @media (max-width: 768px) { .video-tap-hint { display: flex; } }
+
     /* ============ CTA ============ */
     section.projet-cta { padding: 80px 32px; background: var(--pt-bg-warm); }
     .projet-cta-inner {
@@ -209,12 +230,14 @@
       section.galerie { padding: 56px 16px; }
       .galerie-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .galerie-grid .photo-horizontale { grid-column: span 2; }
+      .video-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       section.projet-cta { padding: 56px 16px; }
       .projet-cta-inner { flex-direction: column; align-items: flex-start; }
     }
     @media (max-width: 480px) {
       .galerie-grid { grid-template-columns: 1fr; }
       .galerie-grid .photo-horizontale { grid-column: span 1; }
+      .video-grid { grid-template-columns: 1fr; }
     }
 
     /* ============ LIGHTBOX ============ */
@@ -316,6 +339,41 @@
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1782343487/P1058036_t2calz.jpg" alt="Pompiers d'Innenheim"></div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1782343491/P1058166_jd5iyl.jpg" alt="Pompiers d'Innenheim"></div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1782343489/P1058069_msnwc6.jpg" alt="Pompiers d'Innenheim"></div>
+  </div>
+
+  <div class="galerie-sub-head"><div class="ey">Vidéos</div></div>
+
+  <div class="video-grid">
+    <div class="video-clip" data-video="https://res.cloudinary.com/deteat3at/video/upload/v1784775553/V3_-_F_qvr3do.mp4">
+      <video src="https://res.cloudinary.com/deteat3at/video/upload/v1784775553/V3_-_F_qvr3do.mp4" autoplay muted loop playsinline></video>
+      <div class="play-btn">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="32" fill="rgba(255,255,255,0.22)"/>
+          <polygon points="26,20 48,32 26,44" fill="white"/>
+        </svg>
+      </div>
+      <div class="video-tap-hint">▶ Regarder</div>
+    </div>
+    <div class="video-clip" data-video="https://res.cloudinary.com/deteat3at/video/upload/v1784775557/V2_F_xfirbt.mp4">
+      <video src="https://res.cloudinary.com/deteat3at/video/upload/v1784775557/V2_F_xfirbt.mp4" autoplay muted loop playsinline></video>
+      <div class="play-btn">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="32" fill="rgba(255,255,255,0.22)"/>
+          <polygon points="26,20 48,32 26,44" fill="white"/>
+        </svg>
+      </div>
+      <div class="video-tap-hint">▶ Regarder</div>
+    </div>
+    <div class="video-clip" data-video="https://res.cloudinary.com/deteat3at/video/upload/v1784775536/V1_F_luy2bx.mp4">
+      <video src="https://res.cloudinary.com/deteat3at/video/upload/v1784775536/V1_F_luy2bx.mp4" autoplay muted loop playsinline></video>
+      <div class="play-btn">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="32" fill="rgba(255,255,255,0.22)"/>
+          <polygon points="26,20 48,32 26,44" fill="white"/>
+        </svg>
+      </div>
+      <div class="video-tap-hint">▶ Regarder</div>
+    </div>
   </div>
 </section>
 

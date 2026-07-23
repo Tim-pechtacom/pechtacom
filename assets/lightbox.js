@@ -11,7 +11,7 @@
   var lbVid   = null;
 
   /* ── Collect gallery items in DOM order ── */
-  document.querySelectorAll('.galerie-grid > *').forEach(function (el) {
+  document.querySelectorAll('.galerie-grid > *, .video-grid > *').forEach(function (el) {
     var isVideo = !!el.dataset.video;
     var img     = el.querySelector('img');
     if (isVideo) {
