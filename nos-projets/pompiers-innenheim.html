@@ -167,6 +167,29 @@
     .galerie-grid .photo-4-3:hover img,
     .galerie-grid .photo-horizontale:hover img { transform: scale(1.04); }
 
+    /* ── Filtre galerie ── */
+    .gallery-filter { max-width: 1216px; margin: 0 auto 40px; display: flex; justify-content: center; }
+    .gf-track {
+      display: inline-flex; gap: 6px; padding: 6px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px; backdrop-filter: blur(10px);
+    }
+    .gf-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 18px; border: none; cursor: pointer;
+      font-family: var(--pt-font-body); font-size: 13px; font-weight: 700; letter-spacing: 0.01em;
+      color: rgba(255,255,255,.4); background: transparent;
+      transition: background 220ms var(--pt-ease-out), color 220ms, transform 100ms;
+      min-width: 100px;
+    }
+    .gf-btn svg { width: 36px; height: 36px; flex-shrink: 0; transition: opacity 220ms; }
+    .gf-btn.active { background: white; color: var(--pt-noir); }
+    .gf-btn:active:not(.active) { transform: scale(0.95); }
+    @media (max-width: 480px) {
+      .gf-btn { padding: 12px 18px; min-width: 80px; font-size: 12px; }
+      .gf-btn svg { width: 28px; height: 28px; }
+    }
+
     /* ── Vidéos verticales ── */
     .galerie-sub-head { max-width: 1216px; margin: 48px auto 20px; display: flex; align-items: center; gap: 16px; }
     .galerie-sub-head .ey { font-family: var(--pt-font-title); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-jaune); font-weight: 700; white-space: nowrap; }
@@ -328,9 +351,46 @@
 <section class="galerie">
   <div class="galerie-head">
     <div class="ey">Galerie</div>
-    <h2>Les photos du reportage</h2>
+    <h2>Le reportage</h2>
   </div>
-  <div class="galerie-grid">
+
+  <!-- FILTRE -->
+  <div class="gallery-filter">
+    <div class="gf-track">
+      <button class="gf-btn active" data-show="all">
+        <svg viewBox="0 0 36 36" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="13" height="13" rx="2"/>
+          <rect x="20" y="3" width="13" height="13" rx="2"/>
+          <rect x="3" y="20" width="13" height="13" rx="2"/>
+          <rect x="20" y="20" width="13" height="13" rx="2"/>
+        </svg>
+        Tout
+      </button>
+      <button class="gf-btn" data-show="photos">
+        <svg viewBox="0 0 36 36" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30 7h-4.26L23 4H13L11.26 7H6C4.35 7 3 8.35 3 10v18c0 1.65 1.35 3 3 3h24c1.65 0 3-1.35 3-3V10c0-1.65-1.35-3-3-3zm-12 19c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+          <circle cx="18" cy="18" r="4.5"/>
+        </svg>
+        Photos
+      </button>
+      <button class="gf-btn" data-show="videos">
+        <svg viewBox="0 0 36 36" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="5" width="32" height="26" rx="3" fill="currentColor" opacity=".18"/>
+          <rect x="2" y="5" width="32" height="26" rx="3" stroke="currentColor" stroke-width="2.5" fill="none"/>
+          <rect x="2" y="10" width="6" height="4" rx="1"/>
+          <rect x="2" y="17" width="6" height="4" rx="1"/>
+          <rect x="2" y="24" width="6" height="4" rx="1"/>
+          <rect x="28" y="10" width="6" height="4" rx="1"/>
+          <rect x="28" y="17" width="6" height="4" rx="1"/>
+          <rect x="28" y="24" width="6" height="4" rx="1"/>
+          <polygon points="14,13 14,23 24,18"/>
+        </svg>
+        Vidéos
+      </button>
+    </div>
+  </div>
+
+  <div class="galerie-grid" id="sectionPhotos">
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1782343494/P1058175_ojg9sz.jpg" alt="Pompiers d'Innenheim"></div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1782343490/P1058089_go7bct.jpg" alt="Pompiers d'Innenheim"></div>
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1782343494/P1058213_or15hw.jpg" alt="Pompiers d'Innenheim"></div>
@@ -341,9 +401,9 @@
     <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/v1782343489/P1058069_msnwc6.jpg" alt="Pompiers d'Innenheim"></div>
   </div>
 
-  <div class="galerie-sub-head"><div class="ey">Vidéos</div></div>
+  <div class="galerie-sub-head" id="sectionVideoHead"><div class="ey">Vidéos</div></div>
 
-  <div class="video-grid">
+  <div class="video-grid" id="sectionVideos">
     <div class="video-clip" data-video="https://res.cloudinary.com/deteat3at/video/upload/v1784775553/V3_-_F_qvr3do.mp4">
       <video src="https://res.cloudinary.com/deteat3at/video/upload/v1784775553/V3_-_F_qvr3do.mp4" autoplay muted loop playsinline></video>
       <div class="play-btn">
@@ -447,6 +507,36 @@
   <button class="lightbox-close" id="lightboxClose" aria-label="Fermer">✕</button>
   <div class="lightbox-content" id="lightboxContent"></div>
 </div>
+
+<script>
+  /* Filtre galerie */
+  (function () {
+    var photos   = document.getElementById('sectionPhotos');
+    var vidHead  = document.getElementById('sectionVideoHead');
+    var videos   = document.getElementById('sectionVideos');
+    var btns     = document.querySelectorAll('.gf-btn');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btns.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var show = btn.dataset.show;
+        if (show === 'all') {
+          photos.style.display  = '';
+          vidHead.style.display = '';
+          videos.style.display  = '';
+        } else if (show === 'photos') {
+          photos.style.display  = '';
+          vidHead.style.display = 'none';
+          videos.style.display  = 'none';
+        } else {
+          photos.style.display  = 'none';
+          vidHead.style.display = 'none';
+          videos.style.display  = '';
+        }
+      });
+    });
+  })();
+</script>
 
 <script src="../assets/lightbox.js"></script>
 
