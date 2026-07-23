@@ -168,26 +168,26 @@
     .galerie-grid .photo-horizontale:hover img { transform: scale(1.04); }
 
     /* ── Filtre galerie ── */
-    .gallery-filter { max-width: 1216px; margin: 0 auto 40px; display: flex; justify-content: center; }
+    .gallery-filter { max-width: 1216px; margin: 0 auto 32px; display: flex; justify-content: center; }
     .gf-track {
-      display: inline-flex; gap: 6px; padding: 6px;
+      display: inline-flex; gap: 4px; padding: 4px;
       background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1);
-      border-radius: 24px; backdrop-filter: blur(10px);
+      border-radius: 17px; backdrop-filter: blur(10px);
     }
     .gf-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      padding: 14px 28px; border-radius: 18px; border: none; cursor: pointer;
-      font-family: var(--pt-font-body); font-size: 13px; font-weight: 700; letter-spacing: 0.01em;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      padding: 10px 20px; border-radius: 13px; border: none; cursor: pointer;
+      font-family: var(--pt-font-body); font-size: 11px; font-weight: 700; letter-spacing: 0.01em;
       color: rgba(255,255,255,.4); background: transparent;
       transition: background 220ms var(--pt-ease-out), color 220ms, transform 100ms;
-      min-width: 100px;
+      min-width: 70px;
     }
-    .gf-btn svg { width: 36px; height: 36px; flex-shrink: 0; transition: opacity 220ms; }
+    .gf-btn svg { width: 25px; height: 25px; flex-shrink: 0; transition: opacity 220ms; }
     .gf-btn.active { background: white; color: var(--pt-noir); }
     .gf-btn:active:not(.active) { transform: scale(0.95); }
     @media (max-width: 480px) {
-      .gf-btn { padding: 12px 18px; min-width: 80px; font-size: 12px; }
-      .gf-btn svg { width: 28px; height: 28px; }
+      .gf-btn { padding: 8px 14px; min-width: 58px; font-size: 10px; }
+      .gf-btn svg { width: 20px; height: 20px; }
     }
 
     /* ── Vidéos verticales ── */
@@ -349,11 +349,6 @@
 
 <!-- GALERIE -->
 <section class="galerie">
-  <div class="galerie-head">
-    <div class="ey">Galerie</div>
-    <h2>Le reportage</h2>
-  </div>
-
   <!-- FILTRE -->
   <div class="gallery-filter">
     <div class="gf-track">
@@ -388,6 +383,11 @@
         Vidéos
       </button>
     </div>
+  </div>
+
+  <div class="galerie-head">
+    <div class="ey">Galerie</div>
+    <h2>Le reportage</h2>
   </div>
 
   <div class="galerie-grid" id="sectionPhotos">
