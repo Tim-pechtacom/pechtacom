@@ -53,11 +53,14 @@
       margin: 0 0 20px;
     }
     .hero h1 .couldeg {
-      background: var(--pt-gradient); -webkit-background-clip: text;
-       background-clip: text;
-        color: transparent;
-        font-style: italic;
-        padding-right: 24px;
+      font-style: italic;
+      background: linear-gradient(135deg, #FF003D, #FF5408, #FFDA00, #FF5408, #FF003D);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: pt-em-flow 10s ease-in-out infinite;
+      padding-right: 24px;
     }
     
     .hero .lede { font-size: 19px; line-height: 1.55; color: var(--pt-text-muted); max-width: 540px; margin: 0 0 32px; }
