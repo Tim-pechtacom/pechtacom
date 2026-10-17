@@ -57,6 +57,7 @@
     .field:last-child { margin-bottom: 0; }
     .row { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 0 16px; margin-bottom: 24px; }
     .row:last-child { margin-bottom: 0; }
+    .row.single { grid-template-columns: minmax(0,1fr); }
     .row > .field { margin-bottom: 0; min-width: 0; }
     .field > label, .field > .label { display: block; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
     .field .req { color: var(--pt-rose); }
@@ -84,8 +85,12 @@
       border: 1.5px solid var(--pt-border); background: var(--pt-bg-warm-2); cursor: pointer;
       transition: background 140ms, border-color 140ms, color 140ms; user-select: none;
     }
-    .choice span:hover { border-color: var(--pt-noir); }
-    .choice input:checked + span { background: var(--pt-noir); border-color: var(--pt-noir); color: white; }
+        .choice input:checked + span { background: var(--pt-rose); border-color: var(--pt-rose); color: white; box-shadow: 0 6px 14px -6px rgba(255,0,61,.55); }
+    .choice span:hover { border-color: var(--pt-rose); }
+    .sub-choices { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--pt-bg-warm-2); border: 1px dashed var(--pt-border); }
+    .sub-choices.show { display: block; }
+    .sub-choices .hint { margin: 0; }
+    .sub-choices .choice input:checked + span { background: var(--pt-orange); border-color: var(--pt-orange); box-shadow: none; }
     .choice input:focus-visible + span { outline: 2px solid var(--pt-rose); outline-offset: 2px; }
     .other-input { margin-top: 10px; display: none; }
     .other-input.show { display: block; }
@@ -173,7 +178,7 @@
 <div class="done" id="done">
   <div class="section">
     <h2 id="done-title">Merci, c'est envoyé.</h2>
-    <p id="done-text">Nous avons bien reçu vos réponses. Nous revenons vers vous sous 48 h avec une première proposition.</p>
+    <p id="done-text">Nous avons bien reçu les informations sur <span id="done-entity">votre entreprise</span>. Nous revenons vers vous sous 48 h avec une première proposition.</p>
     <div class="actions">
       <button type="button" class="btn ghost" id="dl-btn">Télécharger mes réponses (PDF)</button>
       <a class="btn" id="mail-btn" href="mailto:contact@pechtacom.fr" style="display:none;text-decoration:none">Écrire à contact@pechtacom.fr</a>
@@ -205,24 +210,27 @@
 <script>
 /* =========================================================
    QUESTIONS — une seule source pour le formulaire et le PDF
-   types : text, email, tel, date, int, url, urls, textarea, radio, check
+   types : text, email, tel, int, url, urls, textarea, radio, check
+   when : n'affiche le champ que pour ce profil ; sub : sous-choix d'une option
    ========================================================= */
 const SECTIONS = [
   { title: 'Vous', fields: [
-    { id: 'entreprise', label: 'Entreprise', type: 'text', required: true },
+    { id: 'profil', label: 'Vous êtes', type: 'radio', options: [ 'Une entreprise', 'Un particulier' ], default: 'Une entreprise' },
+    { id: 'entreprise', label: 'Entreprise', type: 'text', required: true, when: 'Une entreprise' },
     { row: [
       { id: 'nom', label: 'Nom et prénom', type: 'text', required: true },
-      { id: 'fonction', label: 'Fonction', type: 'text' },
+      { id: 'fonction', label: 'Fonction', type: 'text', when: 'Une entreprise' },
     ]},
     { row: [
-      { id: 'email', label: 'E-mail', type: 'email', required: true, placeholder: 'nom@entreprise.fr' },
+      { id: 'email', label: 'E-mail', type: 'email', required: true, placeholder: 'nom@exemple.fr' },
       { id: 'tel', label: 'Téléphone', type: 'tel', placeholder: '07 54 54 38 12' },
     ]},
     { row: [
       { id: 'ville', label: 'Ville', type: 'text' },
-      { id: 'site', label: 'Site internet', type: 'url', placeholder: 'www.entreprise.fr' },
+      { id: 'site', label: 'Site internet', type: 'url', placeholder: 'www.entreprise.fr', when: 'Une entreprise' },
     ]},
-    { id: 'activite', label: 'Votre activité en une phrase', type: 'text', placeholder: 'Ex. : restaurant italien en centre-ville de Strasbourg' },
+    { id: 'activite', label: 'Votre activité en une phrase', type: 'text', placeholder: 'Ex. : restaurant italien en centre-ville de Strasbourg', when: 'Une entreprise' },
+    { id: 'projet_perso', label: 'Votre projet en une phrase', type: 'text', placeholder: 'Ex. : lancer mon activité de coach sportif sur Instagram', when: 'Un particulier' },
   ]},
 
   { title: 'Le projet', fields: [
@@ -249,18 +257,18 @@ const SECTIONS = [
   ]},
 
   { title: 'Tournage', fields: [
-    { row: [
-      { id: 'lieu', label: 'Où se passe le tournage ?', hint: 'Ville ou adresse.', type: 'text' },
-      { id: 'nb_lieux', label: 'Nombre de lieux différents', hint: 'Chiffre uniquement.', type: 'int', max: 99 },
-    ]},
+    { id: 'lieu', label: 'Où se passe le tournage ?', hint: 'Plusieurs choix possibles.', type: 'check', options: [
+      'Dans vos locaux', 'En extérieur', 'Studio fourni par Pech\'tacom', 'Chez vos clients (témoignages ou prestations)', 'À définir ensemble' ],
+      sub: { 'En extérieur': [ 'En ville', 'En nature', 'Sur un événement' ] } },
+    { id: 'nb_lieux', label: 'Nombre de lieux différents', hint: 'Chiffre uniquement.', type: 'int', max: 99 },
     { id: 'personnes', label: 'Qui apparaît dans les vidéos ?', hint: 'Plusieurs choix possibles.', type: 'check', options: [
       'Le dirigeant', 'Des salariés', 'Des clients', 'Des comédiens (à prévoir)', 'Personne (produits, lieux)' ]},
     { id: 'camera', label: 'Ces personnes sont-elles à l\'aise face caméra ?', type: 'radio', options: [
       'Oui', 'Un peu', 'Pas du tout', 'Je ne sais pas' ]},
     { id: 'options', label: 'Éléments à prévoir', hint: 'Plusieurs choix possibles.', type: 'check', options: [
       'Images de drone', 'Sous-titres', 'Voix off', 'Musique', 'Interview avec micros', 'Animation du logo / textes animés' ]},
-    { id: 'dispo', label: 'Créneaux possibles pour tourner', type: 'check', options: [
-      'En semaine', 'Le week-end', 'En soirée' ]},
+    { id: 'dispo', label: 'Créneaux possibles pour tourner', hint: 'Plusieurs choix possibles.', type: 'check', options: [
+      'Soirée en semaine', 'Vendredi après-midi', 'Week-end' ]},
     { id: 'autorisation', label: 'Le lieu demande-t-il une autorisation de tournage ?', hint: 'Lieu public, site sensible, accès réglementé…', type: 'radio', options: [
       'Oui', 'Non', 'Je ne sais pas' ]},
   ]},
@@ -277,26 +285,12 @@ const SECTIONS = [
   { title: 'Publication', fields: [
     { id: 'publication', label: 'Qui publie les vidéos ?', type: 'radio', options: [
       'Vous', 'Pech\'tacom', 'Pech\'tacom, avec réponses aux commentaires', 'À définir' ]},
-    { id: 'comptes', label: 'Vos comptes actuels', hint: 'Nom ou lien des comptes.', type: 'text', placeholder: '@entreprise sur Instagram, TikTok…' },
+    { id: 'comptes', label: 'Vos comptes actuels', hint: 'Nom ou lien des comptes.', type: 'text', placeholder: '@compte sur Instagram, TikTok…' },
     { row: [
       { id: 'abonnes', label: 'Nombre d\'abonnés (compte principal)', hint: 'Chiffre uniquement.', type: 'int', max: 99999999 },
       { id: 'frequence', label: 'Vous publiez aujourd\'hui…', type: 'radio', options: [
         'Jamais', 'Rarement', 'Chaque semaine' ]},
     ]},
-  ]},
-
-  { title: 'Délais et budget', fields: [
-    { row: [
-      { id: 'date_tournage', label: 'Premier tournage souhaité', hint: 'Format JJ/MM/AAAA.', type: 'date' },
-      { id: 'date_publication', label: 'Première publication souhaitée', hint: 'Format JJ/MM/AAAA.', type: 'date' },
-    ]},
-    { id: 'date_imperative', label: 'Cette date est-elle impérative ?', hint: 'Lancement, événement, saison…', type: 'radio', other: true, otherLabel: 'Oui, pourquoi :', options: [
-      'Non' ]},
-    { id: 'budget', label: 'Budget envisagé (HT)', type: 'radio', options: [
-      'Moins de 500 €', '500 à 1 000 €', '1 000 à 2 500 €', '2 500 à 5 000 €', 'Plus de 5 000 €', 'Je ne sais pas' ]},
-    { id: 'budget_type', label: 'Ce budget est…', type: 'radio', options: [
-      'Par mois', 'Au total' ]},
-    { id: 'validation', label: 'Qui valide les vidéos, et en combien de temps ?', type: 'text', placeholder: 'Ex. : la gérante, sous 48 h' },
   ]},
 
   { title: 'Pour finir', fields: [
@@ -311,6 +305,9 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>'
 const ALL = [];
 SECTIONS.forEach(s => s.fields.forEach(f => (f.row || [f]).forEach(x => ALL.push(x))));
 
+const chips = (name, type, options) => options.map(o =>
+  `<label class="choice"><input type="${type}" name="${name}" value="${esc(o)}"><span>${esc(o)}</span></label>`);
+
 function fieldHTML(f) {
   const req = f.required ? ' <span class="req">*</span>' : '';
   const hint = f.hint ? `<p class="hint">${esc(f.hint)}</p>` : '';
@@ -321,7 +318,6 @@ function fieldHTML(f) {
     case 'email': input = `<input type="email" id="${f.id}" name="${f.id}"${ph} autocomplete="email" inputmode="email" maxlength="120">`; break;
     case 'tel':   input = `<input type="tel" id="${f.id}" name="${f.id}"${ph} autocomplete="tel" inputmode="tel" maxlength="20">`; break;
     case 'url':   input = `<input type="text" id="${f.id}" name="${f.id}"${ph} inputmode="url" autocapitalize="off" spellcheck="false" maxlength="300">`; break;
-    case 'date':  input = `<input type="text" class="short" id="${f.id}" name="${f.id}" placeholder="JJ/MM/AAAA" inputmode="numeric" maxlength="10">`; break;
     case 'int':   input = `<input type="text" class="short" id="${f.id}" name="${f.id}" inputmode="numeric" maxlength="${String(f.max).length}">`; break;
     case 'textarea': input = `<textarea id="${f.id}" name="${f.id}" maxlength="2000"></textarea>`; break;
     case 'urls':
@@ -330,10 +326,13 @@ function fieldHTML(f) {
       break;
     case 'radio': case 'check': {
       const t = f.type === 'radio' ? 'radio' : 'checkbox';
-      const opts = f.options.map(o => `<label class="choice"><input type="${t}" name="${f.id}" value="${esc(o)}"><span>${esc(o)}</span></label>`);
-      if (f.other) opts.push(`<label class="choice"><input type="${t}" name="${f.id}" value="__autre"><span>${esc(f.otherLabel ? f.otherLabel.replace(/ :$/, '') : 'Autre')}</span></label>`);
+      const opts = chips(f.id, t, f.options);
+      if (f.other) opts.push(`<label class="choice"><input type="${t}" name="${f.id}" value="__autre"><span>Autre</span></label>`);
       input = `<div class="choices" role="group" aria-label="${esc(f.label)}">${opts.join('')}</div>`;
-      if (f.other) input += `<input type="text" class="other-input" id="${f.id}_autre" name="${f.id}_autre" placeholder="${esc(f.otherLabel || 'Précisez')}" maxlength="200">`;
+      Object.entries(f.sub || {}).forEach(([parent, subs], k) => {
+        input += `<div class="sub-choices" id="${f.id}_sub${k}" data-parent="${esc(parent)}"><p class="hint">${esc(parent)} : précisez</p><div class="choices">${chips(`${f.id}_sub${k}`, 'checkbox', subs).join('')}</div></div>`;
+      });
+      if (f.other) input += `<input type="text" class="other-input" id="${f.id}_autre" name="${f.id}_autre" placeholder="Précisez" maxlength="200">`;
       break;
     }
   }
@@ -348,11 +347,39 @@ document.getElementById('q-sections').innerHTML = SECTIONS.map((s, i) => `
     ${s.fields.map(f => f.row ? `<div class="row">${f.row.map(fieldHTML).join('')}</div>` : fieldHTML(f)).join('')}
   </div>`).join('');
 
+const $ = id => document.getElementById(id);
+ALL.filter(f => f.default).forEach(f => { document.querySelector(`input[name="${f.id}"][value="${f.default}"]`).checked = true; });
+
+/* =========================================================
+   AFFICHAGE CONDITIONNEL (entreprise / particulier, sous-choix, « Autre »)
+   ========================================================= */
+const profil = () => (document.querySelector('input[name="profil"]:checked') || {}).value;
+const visible = f => !f.when || profil() === f.when;
+const isEntreprise = () => profil() !== 'Un particulier';
+
+function refresh() {
+  ALL.forEach(f => {
+    const box = $('f-' + f.id);
+    box.style.display = visible(f) ? '' : 'none';
+    if (!visible(f)) box.classList.remove('invalid');
+    if (f.other) $(f.id + '_autre').classList.toggle('show', document.querySelector(`input[name="${f.id}"][value="__autre"]`).checked);
+    Object.keys(f.sub || {}).forEach((parent, k) => {
+      const on = document.querySelector(`input[name="${f.id}"][value="${parent}"]`).checked;
+      $(`${f.id}_sub${k}`).classList.toggle('show', on);
+    });
+  });
+  // Une ligne dont tous les champs sont masqués disparaît, un champ seul prend toute la largeur
+  document.querySelectorAll('.row').forEach(r => {
+    const shown = [...r.children].filter(c => c.style.display !== 'none').length;
+    r.style.display = shown ? '' : 'none';
+    r.classList.toggle('single', shown === 1);
+  });
+  $('done-entity').textContent = isEntreprise() ? 'votre entreprise' : 'votre projet';
+}
+
 /* =========================================================
    SAISIE : formatage et filtrage en direct
    ========================================================= */
-const $ = id => document.getElementById(id);
-
 function formatTel(v) {
   let s = v.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
   if (s.startsWith('0033')) s = '+33' + s.slice(4);
@@ -365,32 +392,16 @@ function formatTel(v) {
   if (s.startsWith('+')) return s.slice(0, 16);
   return (s.slice(0, 10).match(/.{1,2}/g) || []).join(' ');
 }
-function formatDate(v) {
-  const d = v.replace(/\D/g, '').slice(0, 8);
-  if (d.length <= 2) return d;
-  if (d.length <= 4) return d.slice(0, 2) + '/' + d.slice(2);
-  return d.slice(0, 2) + '/' + d.slice(2, 4) + '/' + d.slice(4);
-}
 
 ALL.forEach(f => {
   const el = $(f.id);
   if (f.type === 'tel') el.addEventListener('input', () => { el.value = formatTel(el.value); });
-  if (f.type === 'date') el.addEventListener('input', e => {
-    if (e.inputType && e.inputType.startsWith('delete')) { el.value = el.value.replace(/[^\d/]/g, ''); return; }
-    el.value = formatDate(el.value);
-  });
   if (f.type === 'int') el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, '').replace(/^0+(?=\d)/, ''); });
-  if (f.other) document.querySelectorAll(`input[name="${f.id}"]`).forEach(r => r.addEventListener('change', () => {
-    const on = document.querySelector(`input[name="${f.id}"][value="__autre"]`).checked;
-    $(f.id + '_autre').classList.toggle('show', on);
-    if (on) $(f.id + '_autre').focus();
-  }));
+  if (f.other) document.querySelector(`input[name="${f.id}"][value="__autre"]`).addEventListener('change', e => { if (e.target.checked) setTimeout(() => $(f.id + '_autre').focus(), 0); });
   // Revalide à la sortie du champ, et efface l'erreur dès qu'on corrige
-  const inputs = document.querySelectorAll(`#f-${f.id} input, #f-${f.id} textarea`);
-  inputs.forEach(i => {
+  document.querySelectorAll(`#f-${f.id} input, #f-${f.id} textarea`).forEach(i => {
     i.addEventListener('blur', () => { if (i.value.trim()) check(f); });
     i.addEventListener('input', () => { if ($('f-' + f.id).classList.contains('invalid')) check(f); });
-    i.addEventListener('change', () => { if ($('f-' + f.id).classList.contains('invalid')) check(f); });
   });
 });
 
@@ -407,30 +418,17 @@ function validTel(v) {
   if (v.startsWith('+')) return d.length >= 8 && d.length <= 15;
   return /^0\d{9}$/.test(d);
 }
-function parseDate(v) {
-  const m = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (!m) return null;
-  const dt = new Date(+m[3], +m[2] - 1, +m[1]);
-  return (dt.getDate() === +m[1] && dt.getMonth() === +m[2] - 1) ? dt : null;
-}
 
 function error(f) {
+  if (!visible(f)) return '';
   const v = f.type === 'urls' ? '' : (($(f.id) && $(f.id).value) || '').trim();
   if (f.required && f.type !== 'radio' && f.type !== 'check' && !v) return 'Ce champ est obligatoire.';
   if (!v && f.type !== 'urls') return '';
   switch (f.type) {
-    case 'email': return RE_EMAIL.test(v) ? '' : 'Adresse e-mail invalide (ex. : nom@entreprise.fr).';
+    case 'email': return RE_EMAIL.test(v) ? '' : 'Adresse e-mail invalide (ex. : nom@exemple.fr).';
     case 'tel':   return validTel(v) ? '' : 'Numéro invalide (ex. : 07 54 54 38 12 ou +33 7 54 54 38 12).';
     case 'url':   return RE_URL.test(v) ? '' : 'Adresse invalide (ex. : www.entreprise.fr).';
     case 'int':   return /^\d+$/.test(v) && +v <= f.max ? '' : 'Chiffres uniquement.';
-    case 'date': {
-      const d = parseDate(v);
-      if (!d) return 'Date invalide (format JJ/MM/AAAA).';
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      if (d < today) return 'Cette date est déjà passée.';
-      if (d.getFullYear() > today.getFullYear() + 3) return 'Date trop lointaine.';
-      return '';
-    }
     case 'urls':
       for (let i = 0; i < f.count; i++) {
         const u = $(`${f.id}_${i}`).value.trim();
@@ -453,31 +451,35 @@ function check(f) {
    ========================================================= */
 function answer(f) {
   if (f.type === 'radio' || f.type === 'check') {
-    const vals = [...document.querySelectorAll(`input[name="${f.id}"]:checked`)].map(i => {
-      if (i.value !== '__autre') return i.value;
-      const t = $(f.id + '_autre').value.trim();
-      const base = f.otherLabel ? f.otherLabel.replace(/ :$/, '') : 'Autre';
-      return t ? `${base} : ${t}` : base;
-    });
-    return vals.join(', ');
+    return [...document.querySelectorAll(`input[name="${f.id}"]:checked`)].map(i => {
+      if (i.value === '__autre') { const t = $(f.id + '_autre').value.trim(); return t ? `Autre : ${t}` : 'Autre'; }
+      const k = Object.keys(f.sub || {}).indexOf(i.value);
+      if (k < 0) return i.value;
+      const subs = [...document.querySelectorAll(`input[name="${f.id}_sub${k}"]:checked`)].map(s => s.value.toLowerCase());
+      return subs.length ? `${i.value} (${subs.join(', ')})` : i.value;
+    }).join(', ');
   }
   if (f.type === 'urls') return Array.from({length: f.count}, (_, i) => $(`${f.id}_${i}`).value.trim()).filter(Boolean).join('\n');
   return $(f.id).value.trim();
 }
 function collect() {
-  return SECTIONS.map(s => ({ title: s.title, items: s.fields.flatMap(f => f.row || [f]).map(f => ({ id: f.id, label: f.label, value: answer(f) })) }));
+  return SECTIONS.map(s => ({
+    title: s.title,
+    items: s.fields.map(f => (f.row || [f]).filter(visible).map(x => ({ id: x.id, label: x.label, value: answer(x) }))).filter(g => g.length),
+  }));
 }
+const clientName = () => (isEntreprise() ? $('entreprise').value.trim() : '') || $('nom').value.trim();
 
 /* =========================================================
    BROUILLON (sauvegarde locale, au cas où la page se ferme)
    ========================================================= */
-const DRAFT_KEY = 'pt-questionnaire-video';
+const DRAFT_KEY = 'pt-questionnaire-video-v2';
 const form = $('q-form');
 function saveDraft() {
   try {
     const data = {};
     form.querySelectorAll('input, textarea').forEach(el => {
-      if (el.type === 'radio' || el.type === 'checkbox') { if (el.checked) (data[el.name + '[]'] = data[el.name + '[]'] || []).push(el.value); }
+      if (el.type === 'radio' || el.type === 'checkbox') { if (el.checked && el.name) (data[el.name + '[]'] = data[el.name + '[]'] || []).push(el.value); }
       else if (el.name) data[el.name] = el.value;
     });
     data.__consent = $('consent').checked;
@@ -489,22 +491,19 @@ function loadDraft() {
     const data = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
     if (!data) return;
     form.querySelectorAll('input, textarea').forEach(el => {
-      if (el.type === 'radio' || el.type === 'checkbox') { if ((data[el.name + '[]'] || []).includes(el.value)) el.checked = true; }
+      if (el.type === 'radio' || el.type === 'checkbox') { if (el.name && data[el.name + '[]']) el.checked = data[el.name + '[]'].includes(el.value); }
       else if (el.name && data[el.name] != null) el.value = data[el.name];
     });
     $('consent').checked = !!data.__consent;
-    ALL.filter(f => f.other).forEach(f => {
-      const on = document.querySelector(`input[name="${f.id}"][value="__autre"]`).checked;
-      $(f.id + '_autre').classList.toggle('show', on);
-    });
   } catch (e) {}
 }
 loadDraft();
+refresh();
+form.addEventListener('change', () => { refresh(); saveDraft(); });
 form.addEventListener('input', saveDraft);
-form.addEventListener('change', saveDraft);
 
 /* =========================================================
-   PDF
+   PDF — version propre, imprimable, présentable en rendez-vous
    ========================================================= */
 // jsPDF (Helvetica) ne gère que l'alphabet latin : on nettoie le reste
 const clean = s => String(s)
@@ -514,92 +513,149 @@ const clean = s => String(s)
 
 let pdfBlob = null, pdfName = 'questionnaire-video.pdf';
 
-function buildPDF(data) {
+async function loadLogo() {
+  try {
+    // Logo réduit à 600 px sur fond beige (JPEG) : le PDF reste léger
+    const img = new Image();
+    img.src = '../assets/LOGO%20COULEURS.png';
+    await img.decode();
+    const w = 600, h = Math.round(w * img.naturalHeight / img.naturalWidth);
+    const cv = Object.assign(document.createElement('canvas'), { width: w, height: h });
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#FFECD9'; ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    return cv.toDataURL('image/jpeg', 0.9);
+  } catch (e) { return null; }
+}
+
+async function buildPDF(data) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const W = 210, M = 18, CW = W - M * 2, BOTTOM = 280;
-  const ROSE = [255, 0, 61], NOIR = [38, 36, 38], GRIS = [107, 102, 105], BEIGE = [255, 236, 217];
-  let y = 0;
+  const W = 210, M = 20, CW = W - M * 2, GAP = 8, BOTTOM = 276, LH = 4.8;
+  const ROSE = [255, 0, 61], NOIR = [38, 36, 38], GRIS = [120, 114, 117], CLAIR = [185, 180, 182], LIGNE = [237, 227, 214], BEIGE = [255, 236, 217];
+  const name = clientName();
+  const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  let y;
 
-  const entreprise = $('entreprise').value.trim();
-  const today = new Date().toLocaleDateString('fr-FR');
-
-  // Bandeau
-  doc.setFillColor(...BEIGE); doc.rect(0, 0, W, 42, 'F');
-  doc.setFillColor(...ROSE); doc.rect(0, 42, W, 1.2, 'F');
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...ROSE);
-  doc.text("PECH'TACOM  -  QUESTIONNAIRE VIDÉO RÉSEAUX SOCIAUX", M, 15);
-  doc.setFontSize(20); doc.setTextColor(...NOIR);
-  doc.text(clean(entreprise || 'Sans nom'), M, 27, { maxWidth: CW });
+  // En-tête
+  doc.setFillColor(...BEIGE); doc.rect(0, 0, W, 52, 'F');
+  doc.setFillColor(...ROSE); doc.rect(0, 52, W, 1, 'F');
+  const logo = await loadLogo();
+  if (logo) {
+    const p = doc.getImageProperties(logo), h = 26;
+    doc.addImage(logo, 'JPEG', W - M - h * p.width / p.height + 3, 13, h * p.width / p.height, h);
+  }
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...ROSE);
+  doc.text('QUESTIONNAIRE VIDÉO RÉSEAUX SOCIAUX', M, 18);
+  doc.setFontSize(22); doc.setTextColor(...NOIR);
+  doc.text(doc.splitTextToSize(clean(name || 'Sans nom'), CW - 50)[0], M, 30);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...GRIS);
-  doc.text(clean(`Rempli par ${$('nom').value.trim()}  -  le ${today}`), M, 35);
-  y = 54;
+  const who = isEntreprise() ? [$('nom').value.trim(), $('fonction').value.trim()].filter(Boolean).join(', ') : 'Particulier';
+  doc.text(clean(who), M, 37);
+  doc.text(clean(`Reçu le ${today}`), M, 43);
+  y = 66;
 
-  const newPage = () => { doc.addPage(); y = 20; };
+  const newPage = () => { doc.addPage(); y = 22; };
+  const block = (it, x, w) => {
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+    const lines = doc.splitTextToSize(clean(it.value || 'Non renseigné'), w);
+    return { it, x, w, lines, h: 4.5 + lines.length * LH };
+  };
+  const draw = b => {
+    let yy = y;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...GRIS);
+    doc.text(clean(b.it.label).toUpperCase(), b.x, yy, { charSpace: 0.2, maxWidth: b.w }); yy += 5;
+    doc.setFont('helvetica', b.it.value ? 'normal' : 'italic'); doc.setFontSize(10.5);
+    doc.setTextColor(...(b.it.value ? NOIR : CLAIR));
+    b.lines.forEach(l => { if (yy > BOTTOM) { newPage(); yy = y; } doc.text(l, b.x, yy); yy += LH; });
+    return yy;
+  };
 
   data.forEach((sec, si) => {
-    if (y > BOTTOM - 30) newPage();
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...ROSE);
-    doc.text(`${String(si + 1).padStart(2, '0')}  ${clean(sec.title).toUpperCase()}`, M, y);
-    y += 3; doc.setDrawColor(237, 227, 214); doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 7;
+    if (y > BOTTOM - 28) newPage();
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...ROSE);
+    doc.text(String(si + 1).padStart(2, '0'), M, y);
+    doc.setFontSize(14); doc.setTextColor(...NOIR);
+    doc.text(clean(sec.title), M + 8, y);
+    y += 3.5; doc.setDrawColor(...LIGNE); doc.setLineWidth(0.4); doc.line(M, y, W - M, y); y += 8;
 
-    sec.items.forEach(it => {
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
-      const lines = doc.splitTextToSize(clean(it.value || '-'), CW);
-      const need = 5 + lines.length * 5 + 4;
-      if (y + Math.min(need, 40) > BOTTOM) newPage();
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...GRIS);
-      doc.text(clean(it.label), M, y); y += 5;
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
-      doc.setTextColor(...(it.value ? NOIR : [170, 165, 168]));
-      lines.forEach(l => { if (y > BOTTOM) newPage(); doc.text(l, M, y); y += 5; });
-      y += 4;
+    sec.items.forEach(group => {
+      const colW = group.length > 1 ? (CW - GAP) / 2 : CW;
+      const blocks = group.map((it, i) => block(it, M + i * (colW + GAP), colW));
+      const h = Math.max(...blocks.map(b => b.h));
+      if (y + Math.min(h, 40) > BOTTOM) newPage();
+      const ends = blocks.map(draw);
+      y = Math.max(...ends) + 5;
     });
-    y += 4;
+    y += 5;
   });
 
   // Pied de page
   const n = doc.getNumberOfPages();
   for (let i = 1; i <= n; i++) {
     doc.setPage(i);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...GRIS);
-    doc.text("Pech'tacom  -  contact@pechtacom.fr  -  pechtacom.fr", M, 290);
-    doc.text(`${i} / ${n}`, W - M, 290, { align: 'right' });
+    doc.setDrawColor(...LIGNE); doc.setLineWidth(0.3); doc.line(M, 284, W - M, 284);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...GRIS);
+    doc.text("Pech'tacom  ·  contact@pechtacom.fr  ·  pechtacom.fr", M, 289);
+    doc.text(`${i} / ${n}`, W - M, 289, { align: 'right' });
   }
 
-  const slug = (entreprise || 'client').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const slug = (name || 'client').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   pdfName = `questionnaire-video-${slug}.pdf`;
   return doc.output('blob');
 }
 
 /* =========================================================
    ENVOI
-   1. FormSubmit : e-mail avec le PDF en pièce jointe
+   1. FormSubmit, envoi classique dans un cadre caché : e-mail court + PDF joint
+      (le mode AJAX de FormSubmit ne transmet pas les pièces jointes)
    2. Sinon Web3Forms (même clé que la page contact) : réponses en texte
    ========================================================= */
 const WEB3FORMS_KEY = 'c65cbc5b-dbaa-4faa-9e58-1771724d14b2';
 
 function asText(data) {
-  return data.map(s => `== ${s.title.toUpperCase()} ==\n` + s.items.map(it => `${it.label} : ${it.value || '-'}`).join('\n')).join('\n\n');
+  return data.map(s => `== ${s.title.toUpperCase()} ==\n` + s.items.flat().map(it => `${it.label} : ${it.value || '-'}`).join('\n')).join('\n\n');
 }
 
-async function sendFormSubmit(data, blob) {
-  const fd = new FormData();
-  fd.append('_subject', `Questionnaire vidéo — ${$('entreprise').value.trim()}`);
-  fd.append('_template', 'box');
-  fd.append('_captcha', 'false');
-  fd.append('_replyto', $('email').value.trim());
-  data.forEach(s => s.items.forEach(it => { if (it.value) fd.append(it.label, it.value); }));
-  fd.append('attachment', new File([blob], pdfName, { type: 'application/pdf' }));
-  const res = await fetch('https://formsubmit.co/ajax/contact@pechtacom.fr', { method: 'POST', body: fd, headers: { Accept: 'application/json' } });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok || String(json.success) !== 'true') throw new Error('formsubmit');
+function sendFormSubmit(blob) {
+  return new Promise((resolve, reject) => {
+    let dt;
+    try { dt = new DataTransfer(); dt.items.add(new File([blob], pdfName, { type: 'application/pdf' })); }
+    catch (e) { return reject(e); }
+
+    const frame = document.createElement('iframe');
+    frame.name = 'fs-frame-' + Date.now(); frame.style.display = 'none';
+    document.body.appendChild(frame);
+
+    const f = document.createElement('form');
+    f.action = 'https://formsubmit.co/contact@pechtacom.fr';
+    f.method = 'POST'; f.enctype = 'multipart/form-data'; f.target = frame.name; f.style.display = 'none';
+    const add = (n, v) => { if (!v) return; const i = document.createElement('input'); i.type = 'hidden'; i.name = n; i.value = v; f.appendChild(i); };
+    add('_subject', `Questionnaire vidéo — ${clientName()}`);
+    add('_template', 'box');
+    add('_captcha', 'false');
+    add('_replyto', $('email').value.trim());
+    add('Profil', isEntreprise() ? 'Entreprise' : 'Particulier');
+    if (isEntreprise()) add('Entreprise', $('entreprise').value.trim());
+    add('Contact', $('nom').value.trim());
+    add('Email', $('email').value.trim());
+    add('Téléphone', $('tel').value.trim());
+    add('Réponses', 'Toutes les réponses sont dans le PDF joint.');
+    const file = document.createElement('input');
+    file.type = 'file'; file.name = 'attachment'; file.files = dt.files;
+    f.appendChild(file);
+    document.body.appendChild(f);
+
+    const timer = setTimeout(() => reject(new Error('timeout')), 20000);
+    frame.addEventListener('load', () => { clearTimeout(timer); resolve(); f.remove(); setTimeout(() => frame.remove(), 1000); }, { once: true });
+    f.submit();
+  });
 }
 
 async function sendWeb3Forms(data) {
   const fd = new FormData();
   fd.append('access_key', WEB3FORMS_KEY);
-  fd.append('subject', `Questionnaire vidéo — ${$('entreprise').value.trim()}`);
+  fd.append('subject', `Questionnaire vidéo — ${clientName()}`);
   fd.append('from_name', "Questionnaire vidéo — Site Pech'tacom");
   fd.append('replyto', $('email').value.trim());
   fd.append('name', $('nom').value.trim());
@@ -638,9 +694,9 @@ form.addEventListener('submit', async e => {
   btn.disabled = true; btn.textContent = 'Envoi en cours…';
   const data = collect();
   let sent = false;
-  try { pdfBlob = buildPDF(data); } catch (err) { pdfBlob = null; }
+  try { pdfBlob = await buildPDF(data); } catch (err) { pdfBlob = null; }
 
-  if (pdfBlob) { try { await sendFormSubmit(data, pdfBlob); sent = true; } catch (err) {} }
+  if (pdfBlob) { try { await sendFormSubmit(pdfBlob); sent = true; } catch (err) {} }
   if (!sent)   { try { await sendWeb3Forms(data); sent = true; } catch (err) {} }
 
   form.style.display = 'none';
@@ -654,7 +710,7 @@ form.addEventListener('submit', async e => {
     $('done-title').textContent = 'L\'envoi n\'a pas fonctionné.';
     $('done-text').textContent = 'Vos réponses sont conservées. Téléchargez le PDF et envoyez-le à contact@pechtacom.fr, ou réessayez dans quelques minutes.';
     const m = $('mail-btn');
-    m.href = 'mailto:contact@pechtacom.fr?subject=' + encodeURIComponent('Questionnaire vidéo — ' + $('entreprise').value.trim());
+    m.href = 'mailto:contact@pechtacom.fr?subject=' + encodeURIComponent('Questionnaire vidéo — ' + clientName());
     m.style.display = 'inline-block';
   }
   if (!pdfBlob) $('dl-btn').style.display = 'none';
