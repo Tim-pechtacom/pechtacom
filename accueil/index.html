@@ -83,7 +83,7 @@
 
     .hero-vis {
       aspect-ratio: 1; border-radius: 32px;
-      background: #000;
+      background: #fdebdc;
       position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 30px 60px -20px rgba(255,84,8,.35);
@@ -473,10 +473,10 @@
       </div>
     </div>
     <div class="hero-vis">
-      <video autoplay muted loop playsinline preload="auto" aria-label="Logo Pech'tacom animé"
-        poster="https://res.cloudinary.com/deteat3at/video/upload/c_crop,w_1080,h_1080,g_center/w_720,h_720,c_scale,q_auto/so_2/v1792256569/Logo_B_-_Eclosion_jus_mdgsv3.jpg">
-        <source src="https://res.cloudinary.com/deteat3at/video/upload/c_crop,w_1080,h_1080,g_center/w_720,h_720,c_scale,q_auto,vc_vp9/v1792256569/Logo_B_-_Eclosion_jus_mdgsv3.webm" type="video/webm">
-        <source src="https://res.cloudinary.com/deteat3at/video/upload/c_crop,w_1080,h_1080,g_center/w_720,h_720,c_scale,q_auto,vc_h264/v1792256569/Logo_B_-_Eclosion_jus_mdgsv3.mp4" type="video/mp4">
+      <video id="hero-logo" autoplay muted playsinline preload="auto" aria-label="Logo Pech'tacom animé"
+        poster="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto/so_2/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.jpg">
+        <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto,vc_vp9/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.webm" type="video/webm">
+        <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto,vc_h264/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.mp4" type="video/mp4">
       </video>
     </div>
   </div>
@@ -857,5 +857,15 @@
 </script>
 
 <script src="../assets/transitions.js"></script>
+<script>
+  // Logo animé : pause de 4 s entre chaque lecture
+  (function () {
+    var v = document.getElementById('hero-logo');
+    if (!v) return;
+    v.addEventListener('ended', function () {
+      setTimeout(function () { v.currentTime = 0; v.play(); }, 4000);
+    });
+  })();
+</script>
 </body>
 </html>
