@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Questionnaire Pech'tacom pour préparer le devis de vos vidéos réseaux sociaux.">
+  <title>Questionnaire vidéo — Pech'tacom</title>
+  <link rel="icon" href="../assets/favicon.ico">
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--pt-bg-warm-2); color: var(--pt-noir); font-family: var(--pt-font-body); }
+
+    /* ============ NAV ============ */
+    .nav-wrap { padding: 24px 32px 0; position: sticky; top: 10px; z-index: 50; transition: top 320ms var(--pt-ease-out); }
+    .nav-wrap.nav-hidden { top: -200px; }
+    .nav {
+      max-width: 1216px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0px 14px 0px 24px; border-radius: 999px;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(20px);
+      border: 1px solid rgba(38,36,38,.08);
+      box-shadow: 0 4px 20px -8px rgba(38,36,38,.08);
+    }
+    .nav img { height: 80px; }
+    .nav .links { display: flex; gap: 4px; }
+    .nav .links a { font-size: 14px; font-weight: 600; color: var(--pt-noir); padding: 8px 14px; border-radius: 999px; text-decoration: none; }
+    .nav .links a:hover { background: var(--pt-bg-warm); }
+    .nav .cta { background: var(--pt-rose); color: white; font-weight: 700; font-size: 14px; padding: 11px 18px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+
+    .menu-toggle { display: none; flex-direction: column; justify-content: center; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; margin-right: 4px; }
+    .menu-toggle span { display: block; width: 22px; height: 2px; background: var(--pt-noir); border-radius: 2px; }
+    .mobile-menu { position: fixed; inset: 0; z-index: 200; background: rgba(38,36,38,.82); display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 450ms var(--pt-ease-out), backdrop-filter 500ms var(--pt-ease-out); }
+    .mobile-menu.open { opacity: 1; pointer-events: all; backdrop-filter: blur(14px); }
+    .mobile-menu-top { margin-top: 10px; height: 84px; display: flex; justify-content: flex-end; align-items: center; padding-right: 14px; }
+    .mobile-menu-close { background: none; border: none; color: rgba(255,255,255,.7); font-size: 22px; cursor: pointer; padding: 8px; line-height: 1; }
+    .mobile-menu-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 48px; }
+    .mobile-links { display: flex; flex-direction: column; align-items: center; }
+    .mobile-links a { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(36px, 10vw, 56px); letter-spacing: -0.03em; color: white; text-decoration: none; padding: 10px 0; }
+    .mobile-cta { margin-top: 32px; background: var(--pt-rose); color: white; font-weight: 700; font-size: 16px; padding: 16px 32px; border-radius: 999px; text-decoration: none; }
+
+    /* ============ EN-TÊTE ============ */
+    .q-head { max-width: 760px; margin: 0 auto; padding: 64px 24px 32px; }
+    .q-head .ey { font-family: var(--pt-font-title); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-rose); font-weight: 700; margin-bottom: 14px; }
+    .q-head h1 { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(34px, 5vw, 56px); letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 20px; }
+    .q-head p { font-size: 17px; line-height: 1.6; color: var(--pt-text-muted); margin: 0 0 10px; }
+
+    /* ============ FORMULAIRE ============ */
+    form { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+    .section { min-width: 0; background: white; border-radius: 24px; padding: 32px; margin-bottom: 20px; border: 1px solid var(--pt-border); }
+    .section h2 { font-family: var(--pt-font-title); font-weight: 800; font-size: 24px; letter-spacing: -0.02em; margin: 0 0 24px; display: flex; align-items: baseline; gap: 12px; }
+    .section h2 .num { font-size: 13px; color: var(--pt-rose); letter-spacing: 0.1em; }
+
+    .field { margin-bottom: 24px; }
+    .field:last-child { margin-bottom: 0; }
+    .row { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 0 16px; margin-bottom: 24px; }
+    .row:last-child { margin-bottom: 0; }
+    .row > .field { margin-bottom: 0; min-width: 0; }
+    .field > label, .field > .label { display: block; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .field .req { color: var(--pt-rose); }
+    .field .hint { font-size: 13px; color: var(--pt-text-muted); margin: 0 0 8px; }
+    .field > label + input, .field > label + textarea { margin-top: 6px; }
+
+    input[type=text], input[type=email], input[type=tel], textarea {
+      width: 100%; font: inherit; font-size: 16px; color: var(--pt-noir);
+      padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--pt-border);
+      background: var(--pt-bg-warm-2); outline: none; transition: border-color 160ms, background 160ms;
+    }
+    textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
+    input:focus, textarea:focus { border-color: var(--pt-noir); background: white; }
+    .field.invalid input, .field.invalid textarea { border-color: var(--pt-rose); background: #fff5f7; }
+    .err { display: none; color: var(--pt-rose); font-size: 13px; font-weight: 600; margin-top: 6px; }
+    .field.invalid .err { display: block; }
+    input.short { max-width: 180px; }
+    .stack input + input { margin-top: 8px; }
+
+    .choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .choice { position: relative; }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .choice span {
+      display: inline-block; padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 600;
+      border: 1.5px solid var(--pt-border); background: var(--pt-bg-warm-2); cursor: pointer;
+      transition: background 140ms, border-color 140ms, color 140ms; user-select: none;
+    }
+    .choice span:hover { border-color: var(--pt-noir); }
+    .choice input:checked + span { background: var(--pt-noir); border-color: var(--pt-noir); color: white; }
+    .choice input:focus-visible + span { outline: 2px solid var(--pt-rose); outline-offset: 2px; }
+    .other-input { margin-top: 10px; display: none; }
+    .other-input.show { display: block; }
+
+    .consent { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; cursor: pointer; }
+    .consent input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--pt-rose); flex-shrink: 0; }
+
+    .submit-zone { text-align: center; padding-top: 12px; }
+    .btn { background: var(--pt-rose); color: white; font: inherit; font-weight: 700; font-size: 17px; padding: 18px 34px; border-radius: 999px; border: none; cursor: pointer; box-shadow: 0 10px 24px -8px rgba(255,0,61,.5); transition: transform 120ms; }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: .6; cursor: wait; }
+    .btn.ghost { background: transparent; color: var(--pt-noir); border: 2px solid var(--pt-noir); box-shadow: none; }
+    .submit-note { font-size: 13px; color: var(--pt-text-muted); margin-top: 14px; }
+    .form-error { display: none; color: var(--pt-rose); font-weight: 700; margin-bottom: 16px; }
+    .form-error.show { display: block; }
+
+    /* ============ CONFIRMATION ============ */
+    .done { display: none; max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+    .done.show { display: block; }
+    .done .section { text-align: center; padding: 56px 32px; }
+    .done h2 { justify-content: center; font-size: 30px; margin-bottom: 12px; }
+    .done p { color: var(--pt-text-muted); font-size: 16px; line-height: 1.6; margin: 0 0 24px; }
+    .done .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    footer.mini { padding: 24px 32px; max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 13px; color: var(--pt-text-muted); border-top: 1px solid var(--pt-border); }
+    footer.mini a { color: var(--pt-text-muted); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .nav-wrap { padding: 10px 16px 0; }
+      .nav { padding: 2px 12px 2px 16px; }
+      .nav .links, .nav .cta { display: none; }
+      .menu-toggle { display: flex; }
+      .q-head { padding: 40px 16px 24px; }
+      form, .done { padding: 0 16px 56px; }
+      .section { padding: 24px 18px; border-radius: 20px; }
+      .row { grid-template-columns: minmax(0,1fr); gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <nav class="nav">
+    <a href="/accueil"><img src="../assets/LOGO COULEURS.png" alt="Pech'tacom"></a>
+    <div class="links">
+      <a href="/accueil">Studio</a>
+      <a href="/nos-projets">Nos projets</a>
+      <a href="/accueil#process">Process</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
+    </div>
+    <a href="/contact" class="cta">Brief express →</a>
+    <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</div>
+
+<header class="q-head" id="top">
+  <div class="ey">★ Questionnaire vidéo</div>
+  <h1>Vos vidéos pour les réseaux sociaux</h1>
+  <p>Vos réponses nous permettent de vous envoyer un devis précis. Comptez 10 minutes environ.</p>
+  <p>Si vous ne savez pas répondre à une question, laissez-la vide. Seuls les champs marqués <span style="color:var(--pt-rose)">*</span> sont obligatoires.</p>
+</header>
+
+<form id="q-form" novalidate>
+  <div id="q-sections"></div>
+
+  <div class="section">
+    <label class="consent">
+      <input type="checkbox" id="consent">
+      <span>J'accepte que ces informations soient utilisées par Pech'tacom pour établir un devis. Elles restent confidentielles. <span class="req" style="color:var(--pt-rose)">*</span></span>
+    </label>
+    <div class="field" id="f-consent" style="margin:0"><div class="err">Merci de cocher cette case pour envoyer le questionnaire.</div></div>
+  </div>
+
+  <div class="submit-zone">
+    <div class="form-error" id="form-error">Certaines réponses sont à corriger (en rouge ci-dessus).</div>
+    <button type="submit" class="btn" id="submit-btn">Envoyer mes réponses →</button>
+    <div class="submit-note">Vos réponses nous sont envoyées en PDF à contact@pechtacom.fr.</div>
+  </div>
+</form>
+
+<div class="done" id="done">
+  <div class="section">
+    <h2 id="done-title">Merci, c'est envoyé.</h2>
+    <p id="done-text">Nous avons bien reçu vos réponses. Nous revenons vers vous sous 48 h avec une première proposition.</p>
+    <div class="actions">
+      <button type="button" class="btn ghost" id="dl-btn">Télécharger mes réponses (PDF)</button>
+      <a class="btn" id="mail-btn" href="mailto:contact@pechtacom.fr" style="display:none;text-decoration:none">Écrire à contact@pechtacom.fr</a>
+    </div>
+  </div>
+</div>
+
+<footer class="mini">
+  <div>© 2026 Pech'tacom — Le fruit de vos idées</div>
+  <div><a href="mailto:contact@pechtacom.fr">contact@pechtacom.fr</a></div>
+</footer>
+
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-top"><button class="mobile-menu-close" aria-label="Fermer">✕</button></div>
+  <div class="mobile-menu-body">
+    <nav class="mobile-links">
+      <a href="/accueil">Studio</a>
+      <a href="/nos-projets">Nos projets</a>
+      <a href="/accueil#process">Process</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
+    </nav>
+    <a href="/contact" class="mobile-cta">Brief express →</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* =========================================================
+   QUESTIONS — une seule source pour le formulaire et le PDF
+   types : text, email, tel, date, int, url, urls, textarea, radio, check
+   ========================================================= */
+const SECTIONS = [
+  { title: 'Vous', fields: [
+    { id: 'entreprise', label: 'Entreprise', type: 'text', required: true },
+    { row: [
+      { id: 'nom', label: 'Nom et prénom', type: 'text', required: true },
+      { id: 'fonction', label: 'Fonction', type: 'text' },
+    ]},
+    { row: [
+      { id: 'email', label: 'E-mail', type: 'email', required: true, placeholder: 'nom@entreprise.fr' },
+      { id: 'tel', label: 'Téléphone', type: 'tel', placeholder: '07 54 54 38 12' },
+    ]},
+    { row: [
+      { id: 'ville', label: 'Ville', type: 'text' },
+      { id: 'site', label: 'Site internet', type: 'url', placeholder: 'www.entreprise.fr' },
+    ]},
+    { id: 'activite', label: 'Votre activité en une phrase', type: 'text', placeholder: 'Ex. : restaurant italien en centre-ville de Strasbourg' },
+  ]},
+
+  { title: 'Le projet', fields: [
+    { id: 'objectif', label: 'Objectif principal des vidéos', type: 'radio', other: true, options: [
+      'Se faire connaître', 'Vendre un produit ou un service', 'Recruter', 'Montrer l\'équipe et les coulisses', 'Promouvoir un événement' ]},
+    { id: 'plateformes', label: 'Sur quelles plateformes ?', hint: 'Plusieurs choix possibles.', type: 'check', options: [
+      'Instagram', 'TikTok', 'Facebook', 'LinkedIn', 'YouTube Shorts', 'YouTube (vidéos longues)', 'Site internet' ]},
+    { id: 'types', label: 'Types de vidéos', hint: 'Plusieurs choix possibles.', type: 'check', other: true, options: [
+      'Présentation de l\'entreprise', 'Produit ou service', 'Coulisses / équipe', 'Face caméra (conseils, prise de parole)',
+      'Témoignage client', 'Événement', 'Tutoriel / démonstration', 'Recrutement', 'Publicité', 'Tendances du moment' ]},
+    { id: 'format', label: 'Format', type: 'radio', options: [
+      'Vertical (9:16)', 'Horizontal (16:9)', 'Les deux', 'Je ne sais pas' ]},
+  ]},
+
+  { title: 'Volume et durée', fields: [
+    { id: 'mission', label: 'Type de besoin', type: 'radio', options: [
+      'Ponctuel (un projet)', 'Récurrent (tous les mois)' ]},
+    { row: [
+      { id: 'nb_videos', label: 'Nombre de vidéos', hint: 'Par mois si récurrent, au total sinon.', type: 'int', max: 999 },
+      { id: 'nb_mois', label: 'Si récurrent : sur combien de mois ?', hint: 'Nombre de mois.', type: 'int', max: 99 },
+    ]},
+    { id: 'duree', label: 'Durée moyenne d\'une vidéo', type: 'radio', options: [
+      'Moins de 15 s', '15 à 30 s', '30 à 60 s', '1 à 3 min', 'Plus de 3 min' ]},
+  ]},
+
+  { title: 'Tournage', fields: [
+    { row: [
+      { id: 'lieu', label: 'Où se passe le tournage ?', hint: 'Ville ou adresse.', type: 'text' },
+      { id: 'nb_lieux', label: 'Nombre de lieux différents', hint: 'Chiffre uniquement.', type: 'int', max: 99 },
+    ]},
+    { id: 'personnes', label: 'Qui apparaît dans les vidéos ?', hint: 'Plusieurs choix possibles.', type: 'check', options: [
+      'Le dirigeant', 'Des salariés', 'Des clients', 'Des comédiens (à prévoir)', 'Personne (produits, lieux)' ]},
+    { id: 'camera', label: 'Ces personnes sont-elles à l\'aise face caméra ?', type: 'radio', options: [
+      'Oui', 'Un peu', 'Pas du tout', 'Je ne sais pas' ]},
+    { id: 'options', label: 'Éléments à prévoir', hint: 'Plusieurs choix possibles.', type: 'check', options: [
+      'Images de drone', 'Sous-titres', 'Voix off', 'Musique', 'Interview avec micros', 'Animation du logo / textes animés' ]},
+    { id: 'dispo', label: 'Créneaux possibles pour tourner', type: 'check', options: [
+      'En semaine', 'Le week-end', 'En soirée' ]},
+    { id: 'autorisation', label: 'Le lieu demande-t-il une autorisation de tournage ?', hint: 'Lieu public, site sensible, accès réglementé…', type: 'radio', options: [
+      'Oui', 'Non', 'Je ne sais pas' ]},
+  ]},
+
+  { title: 'Idées et supports', fields: [
+    { id: 'idees', label: 'Les idées et les textes', type: 'radio', options: [
+      'Nous avons déjà les idées et les textes', 'Nous avons des idées, à travailler ensemble', 'Tout est à créer par Pech\'tacom' ]},
+    { id: 'supports', label: 'Ce que vous avez déjà', hint: 'Plusieurs choix possibles.', type: 'check', options: [
+      'Logo', 'Charte graphique', 'Photos ou vidéos récentes', 'Musique ou jingle', 'Rien pour l\'instant' ]},
+    { id: 'refs', label: '1 à 3 vidéos qui vous plaisent', hint: 'Liens Instagram, TikTok, YouTube…', type: 'urls', count: 3 },
+    { id: 'eviter', label: 'Ce que vous ne voulez surtout pas', hint: 'Ton, style, sujets à éviter.', type: 'textarea' },
+  ]},
+
+  { title: 'Publication', fields: [
+    { id: 'publication', label: 'Qui publie les vidéos ?', type: 'radio', options: [
+      'Vous', 'Pech\'tacom', 'Pech\'tacom, avec réponses aux commentaires', 'À définir' ]},
+    { id: 'comptes', label: 'Vos comptes actuels', hint: 'Nom ou lien des comptes.', type: 'text', placeholder: '@entreprise sur Instagram, TikTok…' },
+    { row: [
+      { id: 'abonnes', label: 'Nombre d\'abonnés (compte principal)', hint: 'Chiffre uniquement.', type: 'int', max: 99999999 },
+      { id: 'frequence', label: 'Vous publiez aujourd\'hui…', type: 'radio', options: [
+        'Jamais', 'Rarement', 'Chaque semaine' ]},
+    ]},
+  ]},
+
+  { title: 'Délais et budget', fields: [
+    { row: [
+      { id: 'date_tournage', label: 'Premier tournage souhaité', hint: 'Format JJ/MM/AAAA.', type: 'date' },
+      { id: 'date_publication', label: 'Première publication souhaitée', hint: 'Format JJ/MM/AAAA.', type: 'date' },
+    ]},
+    { id: 'date_imperative', label: 'Cette date est-elle impérative ?', hint: 'Lancement, événement, saison…', type: 'radio', other: true, otherLabel: 'Oui, pourquoi :', options: [
+      'Non' ]},
+    { id: 'budget', label: 'Budget envisagé (HT)', type: 'radio', options: [
+      'Moins de 500 €', '500 à 1 000 €', '1 000 à 2 500 €', '2 500 à 5 000 €', 'Plus de 5 000 €', 'Je ne sais pas' ]},
+    { id: 'budget_type', label: 'Ce budget est…', type: 'radio', options: [
+      'Par mois', 'Au total' ]},
+    { id: 'validation', label: 'Qui valide les vidéos, et en combien de temps ?', type: 'text', placeholder: 'Ex. : la gérante, sous 48 h' },
+  ]},
+
+  { title: 'Pour finir', fields: [
+    { id: 'autre', label: 'Autre chose à nous dire ?', type: 'textarea' },
+  ]},
+];
+
+/* =========================================================
+   RENDU DU FORMULAIRE
+   ========================================================= */
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ALL = [];
+SECTIONS.forEach(s => s.fields.forEach(f => (f.row || [f]).forEach(x => ALL.push(x))));
+
+function fieldHTML(f) {
+  const req = f.required ? ' <span class="req">*</span>' : '';
+  const hint = f.hint ? `<p class="hint">${esc(f.hint)}</p>` : '';
+  const ph = f.placeholder ? ` placeholder="${esc(f.placeholder)}"` : '';
+  let input = '';
+  switch (f.type) {
+    case 'text':  input = `<input type="text" id="${f.id}" name="${f.id}"${ph} maxlength="200">`; break;
+    case 'email': input = `<input type="email" id="${f.id}" name="${f.id}"${ph} autocomplete="email" inputmode="email" maxlength="120">`; break;
+    case 'tel':   input = `<input type="tel" id="${f.id}" name="${f.id}"${ph} autocomplete="tel" inputmode="tel" maxlength="20">`; break;
+    case 'url':   input = `<input type="text" id="${f.id}" name="${f.id}"${ph} inputmode="url" autocapitalize="off" spellcheck="false" maxlength="300">`; break;
+    case 'date':  input = `<input type="text" class="short" id="${f.id}" name="${f.id}" placeholder="JJ/MM/AAAA" inputmode="numeric" maxlength="10">`; break;
+    case 'int':   input = `<input type="text" class="short" id="${f.id}" name="${f.id}" inputmode="numeric" maxlength="${String(f.max).length}">`; break;
+    case 'textarea': input = `<textarea id="${f.id}" name="${f.id}" maxlength="2000"></textarea>`; break;
+    case 'urls':
+      input = '<div class="stack">' + Array.from({length: f.count}, (_, i) =>
+        `<input type="text" id="${f.id}_${i}" name="${f.id}_${i}" placeholder="Lien ${i+1}" inputmode="url" autocapitalize="off" spellcheck="false" maxlength="300">`).join('') + '</div>';
+      break;
+    case 'radio': case 'check': {
+      const t = f.type === 'radio' ? 'radio' : 'checkbox';
+      const opts = f.options.map(o => `<label class="choice"><input type="${t}" name="${f.id}" value="${esc(o)}"><span>${esc(o)}</span></label>`);
+      if (f.other) opts.push(`<label class="choice"><input type="${t}" name="${f.id}" value="__autre"><span>${esc(f.otherLabel ? f.otherLabel.replace(/ :$/, '') : 'Autre')}</span></label>`);
+      input = `<div class="choices" role="group" aria-label="${esc(f.label)}">${opts.join('')}</div>`;
+      if (f.other) input += `<input type="text" class="other-input" id="${f.id}_autre" name="${f.id}_autre" placeholder="${esc(f.otherLabel || 'Précisez')}" maxlength="200">`;
+      break;
+    }
+  }
+  const isGroup = ['radio', 'check', 'urls'].includes(f.type);
+  const lab = isGroup ? `<span class="label">${esc(f.label)}${req}</span>` : `<label for="${f.id}">${esc(f.label)}${req}</label>`;
+  return `<div class="field" id="f-${f.id}">${lab}${hint}${input}<div class="err"></div></div>`;
+}
+
+document.getElementById('q-sections').innerHTML = SECTIONS.map((s, i) => `
+  <div class="section">
+    <h2><span class="num">${String(i+1).padStart(2,'0')}</span>${esc(s.title)}</h2>
+    ${s.fields.map(f => f.row ? `<div class="row">${f.row.map(fieldHTML).join('')}</div>` : fieldHTML(f)).join('')}
+  </div>`).join('');
+
+/* =========================================================
+   SAISIE : formatage et filtrage en direct
+   ========================================================= */
+const $ = id => document.getElementById(id);
+
+function formatTel(v) {
+  let s = v.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
+  if (s.startsWith('0033')) s = '+33' + s.slice(4);
+  if (s.startsWith('+33')) {
+    let d = s.slice(3);
+    if (d.startsWith('0')) d = d.slice(1);
+    d = d.slice(0, 9);
+    return ('+33 ' + d.slice(0, 1) + ' ' + (d.slice(1).match(/.{1,2}/g) || []).join(' ')).trim();
+  }
+  if (s.startsWith('+')) return s.slice(0, 16);
+  return (s.slice(0, 10).match(/.{1,2}/g) || []).join(' ');
+}
+function formatDate(v) {
+  const d = v.replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 2) return d;
+  if (d.length <= 4) return d.slice(0, 2) + '/' + d.slice(2);
+  return d.slice(0, 2) + '/' + d.slice(2, 4) + '/' + d.slice(4);
+}
+
+ALL.forEach(f => {
+  const el = $(f.id);
+  if (f.type === 'tel') el.addEventListener('input', () => { el.value = formatTel(el.value); });
+  if (f.type === 'date') el.addEventListener('input', e => {
+    if (e.inputType && e.inputType.startsWith('delete')) { el.value = el.value.replace(/[^\d/]/g, ''); return; }
+    el.value = formatDate(el.value);
+  });
+  if (f.type === 'int') el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, '').replace(/^0+(?=\d)/, ''); });
+  if (f.other) document.querySelectorAll(`input[name="${f.id}"]`).forEach(r => r.addEventListener('change', () => {
+    const on = document.querySelector(`input[name="${f.id}"][value="__autre"]`).checked;
+    $(f.id + '_autre').classList.toggle('show', on);
+    if (on) $(f.id + '_autre').focus();
+  }));
+  // Revalide à la sortie du champ, et efface l'erreur dès qu'on corrige
+  const inputs = document.querySelectorAll(`#f-${f.id} input, #f-${f.id} textarea`);
+  inputs.forEach(i => {
+    i.addEventListener('blur', () => { if (i.value.trim()) check(f); });
+    i.addEventListener('input', () => { if ($('f-' + f.id).classList.contains('invalid')) check(f); });
+    i.addEventListener('change', () => { if ($('f-' + f.id).classList.contains('invalid')) check(f); });
+  });
+});
+
+/* =========================================================
+   VALIDATION
+   ========================================================= */
+const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+const RE_URL = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
+const RE_URL_SOCIAL = /^@[\w.]{2,}$/;   // accepte aussi @compte
+
+function validTel(v) {
+  const d = v.replace(/\D/g, '');
+  if (v.startsWith('+33')) return d.length === 11;
+  if (v.startsWith('+')) return d.length >= 8 && d.length <= 15;
+  return /^0\d{9}$/.test(d);
+}
+function parseDate(v) {
+  const m = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!m) return null;
+  const dt = new Date(+m[3], +m[2] - 1, +m[1]);
+  return (dt.getDate() === +m[1] && dt.getMonth() === +m[2] - 1) ? dt : null;
+}
+
+function error(f) {
+  const v = f.type === 'urls' ? '' : (($(f.id) && $(f.id).value) || '').trim();
+  if (f.required && f.type !== 'radio' && f.type !== 'check' && !v) return 'Ce champ est obligatoire.';
+  if (!v && f.type !== 'urls') return '';
+  switch (f.type) {
+    case 'email': return RE_EMAIL.test(v) ? '' : 'Adresse e-mail invalide (ex. : nom@entreprise.fr).';
+    case 'tel':   return validTel(v) ? '' : 'Numéro invalide (ex. : 07 54 54 38 12 ou +33 7 54 54 38 12).';
+    case 'url':   return RE_URL.test(v) ? '' : 'Adresse invalide (ex. : www.entreprise.fr).';
+    case 'int':   return /^\d+$/.test(v) && +v <= f.max ? '' : 'Chiffres uniquement.';
+    case 'date': {
+      const d = parseDate(v);
+      if (!d) return 'Date invalide (format JJ/MM/AAAA).';
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      if (d < today) return 'Cette date est déjà passée.';
+      if (d.getFullYear() > today.getFullYear() + 3) return 'Date trop lointaine.';
+      return '';
+    }
+    case 'urls':
+      for (let i = 0; i < f.count; i++) {
+        const u = $(`${f.id}_${i}`).value.trim();
+        if (u && !RE_URL.test(u) && !RE_URL_SOCIAL.test(u)) return `Le lien ${i+1} n'est pas valide.`;
+      }
+      return '';
+  }
+  return '';
+}
+function check(f) {
+  const msg = error(f);
+  const box = $('f-' + f.id);
+  box.classList.toggle('invalid', !!msg);
+  box.querySelector('.err').textContent = msg;
+  return !msg;
+}
+
+/* =========================================================
+   LECTURE DES RÉPONSES
+   ========================================================= */
+function answer(f) {
+  if (f.type === 'radio' || f.type === 'check') {
+    const vals = [...document.querySelectorAll(`input[name="${f.id}"]:checked`)].map(i => {
+      if (i.value !== '__autre') return i.value;
+      const t = $(f.id + '_autre').value.trim();
+      const base = f.otherLabel ? f.otherLabel.replace(/ :$/, '') : 'Autre';
+      return t ? `${base} : ${t}` : base;
+    });
+    return vals.join(', ');
+  }
+  if (f.type === 'urls') return Array.from({length: f.count}, (_, i) => $(`${f.id}_${i}`).value.trim()).filter(Boolean).join('\n');
+  return $(f.id).value.trim();
+}
+function collect() {
+  return SECTIONS.map(s => ({ title: s.title, items: s.fields.flatMap(f => f.row || [f]).map(f => ({ id: f.id, label: f.label, value: answer(f) })) }));
+}
+
+/* =========================================================
+   BROUILLON (sauvegarde locale, au cas où la page se ferme)
+   ========================================================= */
+const DRAFT_KEY = 'pt-questionnaire-video';
+const form = $('q-form');
+function saveDraft() {
+  try {
+    const data = {};
+    form.querySelectorAll('input, textarea').forEach(el => {
+      if (el.type === 'radio' || el.type === 'checkbox') { if (el.checked) (data[el.name + '[]'] = data[el.name + '[]'] || []).push(el.value); }
+      else if (el.name) data[el.name] = el.value;
+    });
+    data.__consent = $('consent').checked;
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+  } catch (e) {}
+}
+function loadDraft() {
+  try {
+    const data = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+    if (!data) return;
+    form.querySelectorAll('input, textarea').forEach(el => {
+      if (el.type === 'radio' || el.type === 'checkbox') { if ((data[el.name + '[]'] || []).includes(el.value)) el.checked = true; }
+      else if (el.name && data[el.name] != null) el.value = data[el.name];
+    });
+    $('consent').checked = !!data.__consent;
+    ALL.filter(f => f.other).forEach(f => {
+      const on = document.querySelector(`input[name="${f.id}"][value="__autre"]`).checked;
+      $(f.id + '_autre').classList.toggle('show', on);
+    });
+  } catch (e) {}
+}
+loadDraft();
+form.addEventListener('input', saveDraft);
+form.addEventListener('change', saveDraft);
+
+/* =========================================================
+   PDF
+   ========================================================= */
+// jsPDF (Helvetica) ne gère que l'alphabet latin : on nettoie le reste
+const clean = s => String(s)
+  .replace(/[‘’ʼ]/g, "'").replace(/[“”«»]/g, '"')
+  .replace(/[–—]/g, '-').replace(/…/g, '...').replace(/[  ]/g, ' ')
+  .replace(/[^\x09\x0A\x20-\x7E -ÿŒœ€]/g, '');
+
+let pdfBlob = null, pdfName = 'questionnaire-video.pdf';
+
+function buildPDF(data) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, M = 18, CW = W - M * 2, BOTTOM = 280;
+  const ROSE = [255, 0, 61], NOIR = [38, 36, 38], GRIS = [107, 102, 105], BEIGE = [255, 236, 217];
+  let y = 0;
+
+  const entreprise = $('entreprise').value.trim();
+  const today = new Date().toLocaleDateString('fr-FR');
+
+  // Bandeau
+  doc.setFillColor(...BEIGE); doc.rect(0, 0, W, 42, 'F');
+  doc.setFillColor(...ROSE); doc.rect(0, 42, W, 1.2, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...ROSE);
+  doc.text("PECH'TACOM  -  QUESTIONNAIRE VIDÉO RÉSEAUX SOCIAUX", M, 15);
+  doc.setFontSize(20); doc.setTextColor(...NOIR);
+  doc.text(clean(entreprise || 'Sans nom'), M, 27, { maxWidth: CW });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...GRIS);
+  doc.text(clean(`Rempli par ${$('nom').value.trim()}  -  le ${today}`), M, 35);
+  y = 54;
+
+  const newPage = () => { doc.addPage(); y = 20; };
+
+  data.forEach((sec, si) => {
+    if (y > BOTTOM - 30) newPage();
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...ROSE);
+    doc.text(`${String(si + 1).padStart(2, '0')}  ${clean(sec.title).toUpperCase()}`, M, y);
+    y += 3; doc.setDrawColor(237, 227, 214); doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 7;
+
+    sec.items.forEach(it => {
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+      const lines = doc.splitTextToSize(clean(it.value || '-'), CW);
+      const need = 5 + lines.length * 5 + 4;
+      if (y + Math.min(need, 40) > BOTTOM) newPage();
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...GRIS);
+      doc.text(clean(it.label), M, y); y += 5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+      doc.setTextColor(...(it.value ? NOIR : [170, 165, 168]));
+      lines.forEach(l => { if (y > BOTTOM) newPage(); doc.text(l, M, y); y += 5; });
+      y += 4;
+    });
+    y += 4;
+  });
+
+  // Pied de page
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...GRIS);
+    doc.text("Pech'tacom  -  contact@pechtacom.fr  -  pechtacom.fr", M, 290);
+    doc.text(`${i} / ${n}`, W - M, 290, { align: 'right' });
+  }
+
+  const slug = (entreprise || 'client').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  pdfName = `questionnaire-video-${slug}.pdf`;
+  return doc.output('blob');
+}
+
+/* =========================================================
+   ENVOI
+   1. FormSubmit : e-mail avec le PDF en pièce jointe
+   2. Sinon Web3Forms (même clé que la page contact) : réponses en texte
+   ========================================================= */
+const WEB3FORMS_KEY = 'c65cbc5b-dbaa-4faa-9e58-1771724d14b2';
+
+function asText(data) {
+  return data.map(s => `== ${s.title.toUpperCase()} ==\n` + s.items.map(it => `${it.label} : ${it.value || '-'}`).join('\n')).join('\n\n');
+}
+
+async function sendFormSubmit(data, blob) {
+  const fd = new FormData();
+  fd.append('_subject', `Questionnaire vidéo — ${$('entreprise').value.trim()}`);
+  fd.append('_template', 'box');
+  fd.append('_captcha', 'false');
+  fd.append('_replyto', $('email').value.trim());
+  data.forEach(s => s.items.forEach(it => { if (it.value) fd.append(it.label, it.value); }));
+  fd.append('attachment', new File([blob], pdfName, { type: 'application/pdf' }));
+  const res = await fetch('https://formsubmit.co/ajax/contact@pechtacom.fr', { method: 'POST', body: fd, headers: { Accept: 'application/json' } });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || String(json.success) !== 'true') throw new Error('formsubmit');
+}
+
+async function sendWeb3Forms(data) {
+  const fd = new FormData();
+  fd.append('access_key', WEB3FORMS_KEY);
+  fd.append('subject', `Questionnaire vidéo — ${$('entreprise').value.trim()}`);
+  fd.append('from_name', "Questionnaire vidéo — Site Pech'tacom");
+  fd.append('replyto', $('email').value.trim());
+  fd.append('name', $('nom').value.trim());
+  fd.append('email', $('email').value.trim());
+  fd.append('message', asText(data));
+  const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+  if (!res.ok) throw new Error('web3forms');
+}
+
+function downloadPDF() {
+  if (!pdfBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(pdfBlob); a.download = pdfName;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+$('dl-btn').addEventListener('click', downloadPDF);
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  let ok = true;
+  ALL.forEach(f => { if (!check(f)) ok = false; });
+  const consentOk = $('consent').checked;
+  $('f-consent').classList.toggle('invalid', !consentOk);
+  if (!consentOk) ok = false;
+  $('form-error').classList.toggle('show', !ok);
+  if (!ok) {
+    const first = document.querySelector('.field.invalid');
+    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const inp = first.querySelector('input, textarea');
+    if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 400);
+    return;
+  }
+
+  const btn = $('submit-btn');
+  btn.disabled = true; btn.textContent = 'Envoi en cours…';
+  const data = collect();
+  let sent = false;
+  try { pdfBlob = buildPDF(data); } catch (err) { pdfBlob = null; }
+
+  if (pdfBlob) { try { await sendFormSubmit(data, pdfBlob); sent = true; } catch (err) {} }
+  if (!sent)   { try { await sendWeb3Forms(data); sent = true; } catch (err) {} }
+
+  form.style.display = 'none';
+  document.querySelector('.q-head').style.display = 'none';
+  $('done').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (sent) {
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+  } else {
+    $('done-title').textContent = 'L\'envoi n\'a pas fonctionné.';
+    $('done-text').textContent = 'Vos réponses sont conservées. Téléchargez le PDF et envoyez-le à contact@pechtacom.fr, ou réessayez dans quelques minutes.';
+    const m = $('mail-btn');
+    m.href = 'mailto:contact@pechtacom.fr?subject=' + encodeURIComponent('Questionnaire vidéo — ' + $('entreprise').value.trim());
+    m.style.display = 'inline-block';
+  }
+  if (!pdfBlob) $('dl-btn').style.display = 'none';
+});
+
+/* =========================================================
+   NAV
+   ========================================================= */
+(function () {
+  const toggle = document.querySelector('.menu-toggle');
+  const menu = $('mobileMenu');
+  const close = menu.querySelector('.mobile-menu-close');
+  const open = () => { menu.classList.add('open'); menu.setAttribute('aria-hidden', 'false'); toggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; };
+  const shut = () => { menu.classList.remove('open'); menu.setAttribute('aria-hidden', 'true'); toggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; };
+  toggle.addEventListener('click', open);
+  close.addEventListener('click', shut);
+  menu.addEventListener('click', e => { if (e.target === menu) shut(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') shut(); });
+
+  const w = document.querySelector('.nav-wrap');
+  let last = 0, ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      w.classList.toggle('nav-hidden', y > last && y > 80);
+      last = y; ticking = false;
+    });
+    ticking = true;
+  }, { passive: true });
+})();
+</script>
+<script src="../assets/transitions.js"></script>
+</body>
+</html>
