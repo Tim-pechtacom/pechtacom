@@ -128,9 +128,40 @@
       .section { padding: 24px 18px; border-radius: 20px; }
       .row { grid-template-columns: minmax(0,1fr); gap: 24px; }
     }
+
+    /* ============ CHARGEMENT ============ */
+    .loader { position: fixed; inset: 0; z-index: 10000; background: #ffecdd; display: flex; align-items: center; justify-content: center; transition: opacity 500ms var(--pt-ease-out), visibility 500ms; }
+    .loader.hide { opacity: 0; visibility: hidden; }
+    .loader video { width: min(70vw, 420px); aspect-ratio: 1; display: block; }
+    @media (prefers-reduced-motion: reduce) { .loader { display: none; } }
   </style>
 </head>
 <body>
+
+<!-- CHARGEMENT : logo animé, joué une fois -->
+<div class="loader" id="loader" aria-hidden="true">
+  <video id="loader-video" autoplay muted playsinline preload="auto" poster="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_480,q_auto/so_0/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.jpg">
+    <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_480,q_auto,vc_vp9/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.webm" type="video/webm">
+    <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_480,q_auto,vc_h264/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.mp4" type="video/mp4">
+  </video>
+</div>
+<script>
+  (function () {
+    var l = document.getElementById('loader'), v = document.getElementById('loader-video'), done = false;
+    function hide() {
+      if (done) return;
+      done = true;
+      l.classList.add('hide');
+      document.documentElement.style.overflow = '';
+      setTimeout(function () { l.remove(); }, 600);
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return hide();
+    document.documentElement.style.overflow = 'hidden';
+    v.addEventListener('ended', hide);
+    v.addEventListener('error', hide, true);
+    setTimeout(hide, 7000);   // filet de sécurité si la vidéo ne se lance pas
+  })();
+</script>
 
 <!-- NAV -->
 <div class="nav-wrap">
