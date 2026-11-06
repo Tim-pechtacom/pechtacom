@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="only light">
   <meta name="description" content="Pech'tacom — Agence digitale de communication à Strasbourg. Identité de marque, photographie, vidéo et réseaux sociaux. Le fruit de vos idées.">
   <title>Pech'tacom — Agence de communication &amp; com' digitale</title>
   <link rel="icon" href="../assets/favicon.ico">
@@ -438,21 +439,20 @@
     .loader { display: none; position: fixed; inset: 0; z-index: 10000; background: #ffecdd; align-items: center; justify-content: center; transition: opacity 500ms var(--pt-ease-out), visibility 500ms; }
     .loader.show { display: flex; }
     .loader.hide { opacity: 0; visibility: hidden; }
-    .loader video { width: min(78vw, 420px); aspect-ratio: 1; display: block; }
+    .loader img { width: min(78vw, 420px); aspect-ratio: 1; display: block; }
   </style>
 </head>
 <body>
 
 <!-- OUVERTURE MOBILE : logo animé joué une fois par visite (même vidéo que le hero, donc déjà en cache) -->
 <div class="loader" id="loader" aria-hidden="true">
-  <video id="loader-video" muted playsinline preload="auto" poster="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto/so_0/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.jpg">
-    <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto,vc_vp9/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.webm" type="video/webm">
-    <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto,vc_h264/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.mp4" type="video/mp4">
-  </video>
+  <img id="loader-img" alt="">
 </div>
 <script>
+  // Image animée (WebP) plutôt que vidéo : elle se joue partout, sans autorisation de lecture automatique.
+  // Accélérée par Cloudinary : ~2,9 s.
   (function () {
-    var l = document.getElementById('loader'), v = document.getElementById('loader-video'), done = false;
+    var l = document.getElementById('loader'), img = document.getElementById('loader-img'), done = false;
     var seen = false;
     try { seen = sessionStorage.getItem('pt-intro') === '1'; } catch (e) {}
     var mobile = window.matchMedia('(max-width: 768px)').matches;
@@ -468,22 +468,11 @@
     }
     l.classList.add('show');
     document.documentElement.style.overflow = 'hidden';
-    // Accélérée : ~4,7 s → ~3 s
-    var SPEED = 1.6;
-    v.defaultPlaybackRate = SPEED; v.playbackRate = SPEED;
-    v.addEventListener('ended', hide);
-    // Lecture auto bloquée (Brave, mode économie…) : logo final en image fixe, puis la page
-    var started = false;
-    v.addEventListener('playing', function () { started = true; v.playbackRate = SPEED; });
-    function fallback() {
-      if (started || done) return;
-      v.poster = 'https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto/so_4.5/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.jpg';
-      setTimeout(function () { if (!started) hide(); }, 1200);
-    }
-    v.addEventListener('error', fallback, true);
-    setTimeout(fallback, 1500);
-    setTimeout(hide, 5000);   // filet de sécurité
-    var p = v.play(); if (p && p.catch) p.catch(fallback);
+    img.onload = function () { setTimeout(hide, 3000); };
+    img.onerror = hide;
+    img.src = 'https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_400,e_accelerate:60,fl_awebp,fl_animated,q_70,fps_20/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.webp';
+    l.addEventListener('click', hide);   // un tap passe l'animation
+    setTimeout(hide, 6000);              // filet de sécurité (connexion lente)
   })();
 </script>
 
