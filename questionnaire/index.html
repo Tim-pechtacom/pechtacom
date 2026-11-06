@@ -150,7 +150,7 @@
     var l = document.getElementById('loader'), v = document.getElementById('loader-vid'), fin = document.getElementById('loader-fin');
     var done = false, started = false;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { l.remove(); return; }
-    // Vidéo 4K réduite en 1080p : format 9:16 sur téléphone, 16:9 sur écran large. Lue en x1,5 (~3 s).
+    // Vidéo 4K réduite en 1080p : format 9:16 sur téléphone, 16:9 sur écran large. Lue en x2 (~2,4 s).
     var base = '/assets/intro/intro-' + (window.matchMedia('(max-aspect-ratio: 1/1)').matches ? 'mobile' : 'desktop');
     function hide() {
       if (done) return;
@@ -172,9 +172,9 @@
     l.classList.add('show');
     document.documentElement.style.overflow = 'hidden';
     v.muted = true; v.defaultMuted = true; v.playsInline = true;
-    v.defaultPlaybackRate = 1.5;
+    v.defaultPlaybackRate = 2;
     v.innerHTML = '<source src="' + base + '.webm" type="video/webm"><source src="' + base + '.mp4" type="video/mp4">';
-    v.addEventListener('playing', function () { started = true; v.playbackRate = 1.5; });
+    v.addEventListener('playing', function () { started = true; v.playbackRate = 2; });
     v.addEventListener('ended', function () { setTimeout(hide, 250); });
     v.load();
     var p = v.play();
