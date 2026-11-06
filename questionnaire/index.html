@@ -131,9 +131,10 @@
     }
 
     /* ============ CHARGEMENT ============ */
-    .loader { position: fixed; inset: 0; z-index: 10000; background: #ffecdd; display: flex; align-items: center; justify-content: center; transition: opacity 500ms var(--pt-ease-out), visibility 500ms; }
+    .loader { position: fixed; inset: 0; z-index: 10000; background: #ffebd7; display: flex; align-items: center; justify-content: center; transition: opacity 500ms var(--pt-ease-out), visibility 500ms; }
     .loader.hide { opacity: 0; visibility: hidden; }
-    .loader img { width: min(78vw, 420px); aspect-ratio: 1; display: block; }
+    .loader video, .loader img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .loader img { display: none; }
     @media (prefers-reduced-motion: reduce) { .loader { display: none; } }
   </style>
 </head>
@@ -141,14 +142,16 @@
 
 <!-- CHARGEMENT : logo animé, joué une fois -->
 <div class="loader" id="loader" aria-hidden="true">
-  <img id="loader-img" alt="">
+  <video id="loader-vid" muted playsinline preload="none"></video>
+  <img id="loader-fin" alt="">
 </div>
 <script>
-  // Image animée (WebP) plutôt que vidéo : elle se joue partout, sans autorisation de lecture automatique.
-  // Accélérée par Cloudinary : ~2,9 s.
   (function () {
-    var l = document.getElementById('loader'), img = document.getElementById('loader-img'), done = false;
+    var l = document.getElementById('loader'), v = document.getElementById('loader-vid'), fin = document.getElementById('loader-fin');
+    var done = false, started = false;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { l.remove(); return; }
+    // Vidéo 4K réduite en 1080p : format 9:16 sur téléphone, 16:9 sur écran large. Lue en x1,5 (~3 s).
+    var base = '/assets/intro/intro-' + (window.matchMedia('(max-aspect-ratio: 1/1)').matches ? 'mobile' : 'desktop');
     function hide() {
       if (done) return;
       done = true;
@@ -156,13 +159,29 @@
       document.documentElement.style.overflow = '';
       setTimeout(function () { l.remove(); }, 600);
     }
+    // Si le navigateur refuse la lecture automatique : on montre le logo final, net, puis on ouvre le site.
+    function fallback() {
+      if (started || done) return;
+      started = true;
+      try { v.pause(); } catch (e) {}
+      v.removeAttribute('autoplay'); v.innerHTML = ''; v.remove();
+      fin.onload = function () { fin.style.display = 'block'; setTimeout(hide, 1400); };
+      fin.onerror = hide;
+      fin.src = base + '-fin.jpg';
+    }
     l.classList.add('show');
     document.documentElement.style.overflow = 'hidden';
-    img.onload = function () { setTimeout(hide, 3000); };
-    img.onerror = hide;
-    img.src = 'https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_400,e_accelerate:60,fl_awebp,fl_animated,q_70,fps_20/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.webp';
+    v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    v.defaultPlaybackRate = 1.5;
+    v.innerHTML = '<source src="' + base + '.webm" type="video/webm"><source src="' + base + '.mp4" type="video/mp4">';
+    v.addEventListener('playing', function () { started = true; v.playbackRate = 1.5; });
+    v.addEventListener('ended', function () { setTimeout(hide, 250); });
+    v.load();
+    var p = v.play();
+    if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') fallback(); });
+    setTimeout(fallback, 2500);          // rien ne démarre : on bascule sur l'image
     l.addEventListener('click', hide);   // un tap passe l'animation
-    setTimeout(hide, 6000);              // filet de sécurité (connexion lente)
+    setTimeout(hide, 8000);              // filet de sécurité (connexion lente)
   })();
 </script>
 
