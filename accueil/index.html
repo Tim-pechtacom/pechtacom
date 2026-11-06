@@ -468,11 +468,22 @@
     }
     l.classList.add('show');
     document.documentElement.style.overflow = 'hidden';
+    // Accélérée : ~4,7 s → ~3 s
+    var SPEED = 1.6;
+    v.defaultPlaybackRate = SPEED; v.playbackRate = SPEED;
     v.addEventListener('ended', hide);
-    v.addEventListener('error', hide, true);
-    l.addEventListener('click', hide);   // un tap passe l'animation
-    setTimeout(hide, 7000);              // filet de sécurité si la vidéo ne se lance pas
-    var p = v.play(); if (p && p.catch) p.catch(hide);
+    // Lecture auto bloquée (Brave, mode économie…) : logo final en image fixe, puis la page
+    var started = false;
+    v.addEventListener('playing', function () { started = true; v.playbackRate = SPEED; });
+    function fallback() {
+      if (started || done) return;
+      v.poster = 'https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto/so_4.5/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.jpg';
+      setTimeout(function () { if (!started) hide(); }, 1200);
+    }
+    v.addEventListener('error', fallback, true);
+    setTimeout(fallback, 1500);
+    setTimeout(hide, 5000);   // filet de sécurité
+    var p = v.play(); if (p && p.catch) p.catch(fallback);
   })();
 </script>
 
