@@ -369,7 +369,7 @@
 
       .hero { padding: 40px 16px 56px; }
       .hero-grid { grid-template-columns: 1fr; gap: 40px; }
-      .hero-vis { order: -1; max-width: 380px; margin: 0 auto; }
+      .hero-vis { display: none; }   /* sur mobile, le logo animé passe en écran d'ouverture */
 
       .marquee-section { padding-left: 16px; padding-right: 16px; }
       .marquee { margin-left: -16px; margin-right: -16px; }
@@ -433,9 +433,48 @@
       /* scroll-hide nav */
     .nav-wrap { transition: top 400ms cubic-bezier(0.25,0,0,1), opacity 350ms; }
     .nav-wrap.nav-hidden { top: -200px; opacity: 0; pointer-events: none; }
+
+    /* ============ OUVERTURE MOBILE : logo animé plein écran ============ */
+    .loader { display: none; position: fixed; inset: 0; z-index: 10000; background: #ffecdd; align-items: center; justify-content: center; transition: opacity 500ms var(--pt-ease-out), visibility 500ms; }
+    .loader.show { display: flex; }
+    .loader.hide { opacity: 0; visibility: hidden; }
+    .loader video { width: min(78vw, 420px); aspect-ratio: 1; display: block; }
   </style>
 </head>
 <body>
+
+<!-- OUVERTURE MOBILE : logo animé joué une fois par visite (même vidéo que le hero, donc déjà en cache) -->
+<div class="loader" id="loader" aria-hidden="true">
+  <video id="loader-video" muted playsinline preload="auto" poster="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto/so_0/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.jpg">
+    <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto,vc_vp9/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.webm" type="video/webm">
+    <source src="https://res.cloudinary.com/deteat3at/video/upload/c_fill,ar_1:1,g_center,w_720,q_auto,vc_h264/v1792257249/Logo_B_-_Eclosion_jus_background_beige_vrvph9.mp4" type="video/mp4">
+  </video>
+</div>
+<script>
+  (function () {
+    var l = document.getElementById('loader'), v = document.getElementById('loader-video'), done = false;
+    var seen = false;
+    try { seen = sessionStorage.getItem('pt-intro') === '1'; } catch (e) {}
+    var mobile = window.matchMedia('(max-width: 768px)').matches;
+    var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!mobile || seen || calm) { l.remove(); return; }
+    try { sessionStorage.setItem('pt-intro', '1'); } catch (e) {}
+    function hide() {
+      if (done) return;
+      done = true;
+      l.classList.add('hide');
+      document.documentElement.style.overflow = '';
+      setTimeout(function () { l.remove(); }, 600);
+    }
+    l.classList.add('show');
+    document.documentElement.style.overflow = 'hidden';
+    v.addEventListener('ended', hide);
+    v.addEventListener('error', hide, true);
+    l.addEventListener('click', hide);   // un tap passe l'animation
+    setTimeout(hide, 7000);              // filet de sécurité si la vidéo ne se lance pas
+    var p = v.play(); if (p && p.catch) p.catch(hide);
+  })();
+</script>
 
 <!-- NAV -->
 <div class="nav-wrap">
@@ -862,6 +901,7 @@
   (function () {
     var v = document.getElementById('hero-logo');
     if (!v) return;
+    if (!v.offsetParent) { v.pause(); v.removeAttribute('autoplay'); return; }   // masqué sur mobile
     v.addEventListener('ended', function () {
       setTimeout(function () { v.currentTime = 0; v.play(); }, 4000);
     });
