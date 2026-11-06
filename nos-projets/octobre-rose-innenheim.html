@@ -136,6 +136,8 @@
       position: absolute; inset: 0; width: 100%; height: 100%;
       object-fit: cover; display: block;
     }
+    .hero-content h1 .nowrap { white-space: nowrap; }
+    @media (max-width: 768px) { .hero-content h1 { font-size: min(48px, 11.5vw); } }
     /* Photos paysage : 2 colonnes, hauteur alignée sur les photos verticales de la même ligne */
     .galerie-grid .photo-paysage { grid-column: span 2; overflow: hidden; border-radius: 16px; background: rgba(255,255,255,.06); position: relative; min-height: 0; }
     .galerie-grid .photo-paysage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 400ms var(--pt-ease-out); }
@@ -167,7 +169,7 @@
       <span class="tag">Partenariat</span>
       <span class="yr">2026</span>
     </div>
-    <h1>Octobre Rose · Marche nocturne d'Innenheim</h1>
+    <h1>Octobre Rose · <span class="nowrap">Marche nocturne</span> d'Innenheim</h1>
     <p class="sub">Partenaires de la marche nocturne d'Innenheim pour Octobre Rose, nous avons suivi la soirée en photo.</p>
   </div>
 </section>
