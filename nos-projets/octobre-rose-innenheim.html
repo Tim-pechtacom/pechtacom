@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="only light">
+  <meta name="description" content="Octobre Rose — Marche nocturne d'Innenheim. Pech'tacom, partenaire de l'événement, a couvert la soirée en photo.">
+  <title>Octobre Rose · Marche nocturne d'Innenheim — Nos projets · Pech'tacom</title>
+  <link rel="icon" href="../assets/favicon.ico">
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--pt-bg); color: var(--pt-noir); font-family: var(--pt-font-body); }
+    .nav-wrap { padding: 24px 32px 0; position: sticky; top: 10px; z-index: 50; }
+    .nav { max-width: 1216px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0px 14px 0px 24px; border-radius: 999px; background: rgba(255,255,255,.92); backdrop-filter: blur(20px); border: 1px solid rgba(38,36,38,.08); box-shadow: 0 4px 20px -8px rgba(38,36,38,.08); }
+    .nav img { height: 80px; }
+    .nav .links { display: flex; gap: 4px; }
+    .nav .links a { font-size: 14px; font-weight: 600; color: var(--pt-noir); padding: 8px 14px; border-radius: 999px; text-decoration: none; }
+    .nav .links a.active, .nav .links a:hover { background: var(--pt-bg-warm); }
+    .nav .cta { background: var(--pt-rose); color: white; font-weight: 700; font-size: 14px; padding: 11px 18px; border-radius: 999px; text-decoration: none; }
+    .menu-toggle { display: none; flex-direction: column; justify-content: center; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; margin-right: 4px; }
+    .menu-toggle span { display: block; width: 22px; height: 2px; background: var(--pt-noir); border-radius: 2px; transition: transform 240ms var(--pt-ease-out), opacity 160ms; }
+    .mobile-menu { position: fixed; inset: 0; z-index: 200; background: rgba(38,36,38,.82); backdrop-filter: blur(0px); display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 450ms var(--pt-ease-out), backdrop-filter 500ms var(--pt-ease-out); }
+    .mobile-menu.open { opacity: 1; pointer-events: all; backdrop-filter: blur(14px); }
+    .mobile-menu-top { margin-top: 10px; height: 84px; display: flex; justify-content: flex-end; align-items: center; padding-right: 14px; flex-shrink: 0; }
+    .mobile-menu-close { background: none; border: none; color: rgba(255,255,255,.7); font-size: 22px; cursor: pointer; padding: 8px; line-height: 1; }
+    .mobile-menu-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 48px; }
+    .mobile-links { display: flex; flex-direction: column; align-items: center; }
+    .mobile-links a { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(36px, 10vw, 56px); letter-spacing: -0.03em; color: white; text-decoration: none; padding: 10px 0; transition: color 160ms; }
+    .mobile-links a:hover { color: var(--pt-rose); }
+    .mobile-cta { margin-top: 32px; background: var(--pt-rose); color: white; font-weight: 700; font-size: 16px; padding: 16px 32px; border-radius: 999px; text-decoration: none; }
+    .hero { height: 90vh; min-height: 560px; position: relative; overflow: hidden; display: flex; align-items: flex-end; background-image: url('https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_2400/v1793998735/P1059837_allegee-81_y57xxc.jpg'); background-size: cover; background-position: center; }
+    .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(38,36,38,.85) 0%, rgba(38,36,38,.2) 50%, transparent 100%); }
+    .hero-content { position: relative; z-index: 1; padding: 56px max(32px, calc((100vw - 1216px) / 2 + 32px)); width: 100%; }
+    .hero-content .back-link { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.7); text-decoration: none; margin-bottom: 32px; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); transition: color 160ms, border-color 160ms; }
+    .hero-content .back-link:hover { color: white; border-color: rgba(255,255,255,.6); }
+    .hero-content .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .hero-content .tag { font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: rgba(255,255,255,.18); backdrop-filter: blur(10px); color: white; }
+    .hero-content .yr { font-family: ui-monospace, monospace; font-size: 12px; color: rgba(255,255,255,.6); }
+    .hero-content h1 { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(48px, 7vw, 96px); letter-spacing: -0.04em; line-height: 0.95; color: white; margin: 0 0 16px; }
+    .hero-content .sub { font-size: 18px; line-height: 1.5; color: rgba(255,255,255,.8); max-width: 560px; margin: 0; }
+    section.intro { padding: 80px 32px; background: white; }
+    .intro-grid { max-width: 1216px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.8fr; gap: 80px; align-items: start; }
+    .intro-aside { position: sticky; top: 120px; }
+    .intro-aside .ey { font-family: var(--pt-font-title); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-rose); font-weight: 700; margin-bottom: 16px; }
+    .intro-aside h2 { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.025em; line-height: 1.08; margin: 0 0 16px; }
+    .intro-aside .stats { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .intro-aside .stat { padding: 16px 20px; background: var(--pt-bg-warm); border-radius: 16px; }
+    .intro-aside .stat b { display: block; font-family: var(--pt-font-title); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; color: var(--pt-noir); }
+    .intro-aside .stat span { font-size: 13px; color: var(--pt-text-muted); }
+    .intro-body p { font-size: 18px; line-height: 1.75; color: var(--pt-text-muted); margin: 0 0 24px; }
+    .intro-body p:last-child { margin-bottom: 0; }
+    section.galerie { padding: 80px 32px; background: var(--pt-noir); }
+    .galerie-head { max-width: 1216px; margin: 0 auto 40px; }
+    .galerie-head .ey { font-family: var(--pt-font-title); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pt-jaune); font-weight: 700; margin-bottom: 12px; }
+    .galerie-head h2 { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -0.025em; color: white; margin: 0; }
+    .galerie-grid { max-width: 1216px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .galerie-grid .photo { aspect-ratio: 4/3; overflow: hidden; border-radius: 16px; background: rgba(255,255,255,.06); }
+    .galerie-grid .photo.large { grid-column: span 2; aspect-ratio: 16/9; }
+    .galerie-grid .photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 400ms var(--pt-ease-out); }
+    .galerie-grid .photo:hover img { transform: scale(1.04); }
+    section.projet-cta { padding: 80px 32px; background: var(--pt-bg-warm); }
+    .projet-cta-inner { max-width: 1216px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+    .projet-cta-inner h2 { font-family: var(--pt-font-title); font-weight: 800; font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -0.025em; line-height: 1.08; margin: 0; }
+    .projet-cta-inner .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .projet-cta-inner a.primary { background: var(--pt-rose); color: white; font-weight: 700; padding: 16px 26px; border-radius: 999px; text-decoration: none; display: inline-flex; gap: 8px; align-items: center; box-shadow: 0 10px 24px -8px rgba(255,0,61,.5); }
+    .projet-cta-inner a.ghost { color: var(--pt-noir); font-weight: 700; padding: 16px 26px; border-radius: 999px; text-decoration: none; border: 2px solid var(--pt-noir); }
+    footer.mini { padding: 24px 32px; max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 13px; color: var(--pt-text-muted); border-top: 1px solid var(--pt-border); }
+    footer.mini a { color: var(--pt-text-muted); text-decoration: none; }
+    @media (max-width: 1024px) {
+      .galerie-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .nav-wrap { padding: 10px 16px 0; } .nav { padding: 2px 12px 2px 16px; } .nav .links { display: none; } .nav .cta { display: none; } .menu-toggle { display: flex; }
+      .hero-content { padding: 40px 16px; } section.intro { padding: 56px 16px; } .intro-grid { grid-template-columns: 1fr; gap: 40px; } .intro-aside { position: static; }
+      section.galerie { padding: 56px 16px; } .galerie-grid { grid-template-columns: 1fr; } .galerie-grid .photo.large { grid-column: auto; aspect-ratio: 4/3; } .galerie-grid .photo-horizontale { grid-column: auto; } .galerie-grid .video-horizontale { grid-column: auto; }
+      section.projet-cta { padding: 56px 16px; } .projet-cta-inner { flex-direction: column; align-items: flex-start; } footer.mini { padding: 20px 16px; }
+    }
+      /* scroll-hide nav */
+    .nav-wrap { transition: top 400ms cubic-bezier(0.25,0,0,1), opacity 350ms; }
+    .nav-wrap.nav-hidden { top: -200px; opacity: 0; pointer-events: none; }
+
+    /* ============ LIGHTBOX ============ */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,.94); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 260ms cubic-bezier(0.25,0,0,1);
+    }
+    .lightbox.open { opacity: 1; pointer-events: all; }
+    .lightbox-close {
+      position: fixed; top: 18px; right: 18px;
+      background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.25);
+      color: white; width: 48px; height: 48px; border-radius: 50%; font-size: 20px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 160ms; z-index: 1; line-height: 1;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.3); }
+    .lightbox-content { display: flex; align-items: center; justify-content: center; max-width: 94vw; max-height: 94vh; }
+    .lightbox-content img { max-width: 94vw; max-height: 94vh; border-radius: 10px; object-fit: contain; display: block; }
+    .lightbox-content video { max-width: 94vw; max-height: 94vh; border-radius: 10px; display: block; }
+    /* -- Formats galerie : classes de cadrage -- */
+    /* position:relative + absolute img = taille 100% garantie quel que soit le navigateur */
+    .galerie-grid .petite-photo,
+    .galerie-grid .photo-vertical,
+    .galerie-grid .photo-3-4,
+    .galerie-grid .photo-4-3,
+    .galerie-grid .photo-horizontale,
+    .galerie-grid .video-horizontale {
+      overflow: hidden; border-radius: 16px; background: rgba(255,255,255,.06);
+      position: relative; min-height: 0;
+    }
+    .galerie-grid .petite-photo      { aspect-ratio: 1/1; }
+    .galerie-grid .photo-vertical    { aspect-ratio: 2/3; }
+    .galerie-grid .photo-3-4         { aspect-ratio: 3/4; }
+    .galerie-grid .photo-4-3         { aspect-ratio: 4/3; }
+    .galerie-grid .photo-horizontale { aspect-ratio: 16/9; grid-column: span 2; }
+    .galerie-grid .video-horizontale { aspect-ratio: 16/9; grid-column: span 2; background: #000; cursor: pointer; }
+    .galerie-grid .petite-photo img,
+    .galerie-grid .photo-vertical img,
+    .galerie-grid .photo-3-4 img,
+    .galerie-grid .photo-4-3 img,
+    .galerie-grid .photo-horizontale img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block; transition: transform 400ms var(--pt-ease-out);
+    }
+    .galerie-grid .petite-photo:hover img,
+    .galerie-grid .photo-vertical:hover img,
+    .galerie-grid .photo-3-4:hover img,
+    .galerie-grid .photo-4-3:hover img,
+    .galerie-grid .photo-horizontale:hover img { transform: scale(1.04); }
+    .galerie-grid .video-horizontale video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    /* Photos paysage : 2 colonnes, hauteur alignée sur les photos verticales de la même ligne */
+    .galerie-grid .photo-paysage { grid-column: span 2; overflow: hidden; border-radius: 16px; background: rgba(255,255,255,.06); position: relative; min-height: 0; }
+    .galerie-grid .photo-paysage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 400ms var(--pt-ease-out); }
+    .galerie-grid .photo-paysage:hover img { transform: scale(1.04); }
+    @media (max-width: 1024px) { .galerie-grid { grid-auto-flow: dense; } .galerie-grid .photo-paysage { aspect-ratio: 3/2; } }
+    @media (max-width: 768px) { .galerie-grid .photo-paysage { grid-column: auto; } }
+  </style>
+</head>
+<body>
+<div class="nav-wrap">
+  <nav class="nav">
+    <a href="/accueil"><img src="../assets/LOGO COULEURS.png" alt="Pech'tacom"></a>
+        <div class="links">
+      <a href="/accueil">Studio</a>
+      <a href="/nos-projets" class="active">Nos projets</a>
+      <a href="/accueil#process">Process</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
+    </div>
+    <a href="/contact" class="cta">Brief express →</a>
+    <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+</div>
+<section class="hero">
+  <div class="hero-content">
+    <a href="/nos-projets" class="back-link">← Nos projets</a>
+    <div class="tags">
+      <span class="tag">Photographie</span>
+      <span class="tag">Partenariat</span>
+      <span class="yr">2026</span>
+    </div>
+    <h1>Octobre Rose · Marche nocturne d'Innenheim</h1>
+    <p class="sub">Partenaires de la marche nocturne d'Innenheim pour Octobre Rose, nous avons suivi la soirée en photo.</p>
+  </div>
+</section>
+<section class="intro">
+  <div class="intro-grid">
+    <div class="intro-aside">
+      <div class="ey">Le projet</div>
+      <h2>Une nuit en rose.</h2>
+      <div class="stats">
+        <div class="stat"><b>Photographie</b><span>Prestation réalisée</span></div>
+        <div class="stat"><b>Octobre 2026</b><span>Date de l'événement</span></div>
+        <div class="stat"><b>Innenheim</b><span>Lieu de la marche</span></div>
+      </div>
+    </div>
+    <div class="intro-body">
+      <p>Chaque année, Octobre Rose sensibilise au dépistage du cancer du sein. À Innenheim, l'événement prend la forme d'une marche nocturne : gilets roses, boas, lampes frontales et un parcours éclairé à travers la commune. Pech'tacom était partenaire de cette édition.</p>
+      <p>Nous avons couvert la soirée du début à la fin : le stand et ses goodies vendus au profit de la cause, le départ, les groupes de marcheurs, les bénévoles qui sécurisaient le parcours et les arbres illuminés en rose au bord de l'étang.</p>
+      <p>Photographier de nuit demande de travailler avec très peu de lumière sans perdre l'énergie du moment. Le résultat : des images qui gardent la bonne humeur des participants et la couleur de la soirée, prêtes à être partagées pour faire vivre l'événement et préparer la prochaine édition.</p>
+    </div>
+  </div>
+</section>
+<section class="galerie">
+  <div class="galerie-head"><div class="ey">Galerie</div><h2>Les visuels du projet</h2></div>
+  <div class="galerie-grid">
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998664/P1059548_allegee-89_yspwv3.jpg" alt="Stand Octobre Rose : pin's, mousquetons et goodies roses" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998671/P1059550_allegee-86_x0yqmz.jpg" alt="Gourde Octobre Rose sur le stand" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998675/P1059551_allegee-88_wrg8as.jpg" alt="Table du stand avec les mousquetons et pin's" loading="lazy"></div>
+    <div class="photo-paysage"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998735/P1059837_allegee-81_y57xxc.jpg" alt="Arbres illuminés en rose se reflétant dans l'étang" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998667/P1059844_allegee-81_op8uin.jpg" alt="Marcheuses au milieu des arbres illuminés" loading="lazy"></div>
+    <div class="photo-paysage"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998715/P1059860_allegee-80_rgwhsi.jpg" alt="Groupe de marcheurs avec gilets roses et boas" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998708/P1059706_allegee-82_nm8ksv.jpg" alt="Trois marcheurs en gilets roses, boas et oreilles de lapin" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998658/P1059792_allegee-81_pgy8bc.jpg" alt="Groupe de marcheurs, mains levées" loading="lazy"></div>
+    <div class="photo-paysage"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998734/P1059907_allegee-83_m7setu.jpg" alt="Bénévoles en gilets roses devant le véhicule d'ouverture" loading="lazy"></div>
+    <div class="photo-paysage"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998738/P1059917_allegee-78_spbfks.jpg" alt="Groupe de marcheurs souriants, dont une personne en fauteuil" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998682/P1059554_allegee-85_hfe9wh.jpg" alt="Deux participantes trinquent avant le départ" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998638/P1059589_allegee-85_hlul92.jpg" alt="Participante en t-shirt de la Ligue contre le cancer" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998691/P1059639_allegee-86_jwb9qa.jpg" alt="Participante en t-shirt « Assistante maternelle et fière de l'être »" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998694/P1059682_allegee-80_eu8qac.jpg" alt="Quads de sécurité éclairant le parcours" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998701/P1059693_allegee-80_ro9b5o.jpg" alt="Quad de sécurité avec sa pilote en gilet rose" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998688/P1059619_allegee-85_khgxzx.jpg" alt="Bénévole en veste rose Octobre Rose" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998645/P1059699_allegee-87_beaemt.jpg" alt="Marcheur en gilet rose et lampe frontale" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998704/P1059705_allegee-83_x0uifn.jpg" alt="Marcheuse déguisée avec oreilles de lapin et boa" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998662/P1059809_allegee-85_zfdwkq.jpg" alt="Marcheuse qui danse en gilet rose" loading="lazy"></div>
+    <div class="photo-vertical"><img src="https://res.cloudinary.com/deteat3at/image/upload/f_auto,q_auto,w_1600/v1793998678/P1059865_allegee-85_pgqd9w.jpg" alt="Marcheuse en gilet rose faisant le signe de la victoire" loading="lazy"></div>
+  </div>
+</section>
+<section class="projet-cta">
+  <div class="projet-cta-inner">
+    <h2>Un projet similaire<br>en tête ?</h2>
+    <div class="actions">
+      <a href="/accueil#contact" class="primary">Démarrer un projet →</a>
+      <a href="/nos-projets" class="ghost">Voir tous les projets</a>
+    </div>
+  </div>
+</section>
+<footer class="mini">
+  <div>© 2026 Pech'tacom — Le fruit de vos idées</div>
+  <div><a href="/accueil">pechtacom.fr</a></div>
+</footer>
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-top"><button class="mobile-menu-close" aria-label="Fermer">✕</button></div>
+  <div class="mobile-menu-body">
+        <nav class="mobile-links">
+      <a href="/accueil">Studio</a>
+      <a href="/nos-projets">Nos projets</a>
+      <a href="/accueil#process">Process</a>
+      <a href="/contact">Contact</a>
+      <a href="/a-propos">À propos</a>
+    </nav>
+    <a href="/contact" class="mobile-cta">Brief express →</a>
+  </div>
+</div>
+<script>
+  const toggle = document.querySelector('.menu-toggle');
+  const menu = document.getElementById('mobileMenu');
+  if (toggle && menu) {
+    const close = menu.querySelector('.mobile-menu-close');
+    function openMenu() { menu.classList.add('open'); menu.setAttribute('aria-hidden','false'); toggle.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+    function closeMenu() { menu.classList.remove('open'); menu.setAttribute('aria-hidden','true'); toggle.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', openMenu);
+    if (close) close.addEventListener('click', closeMenu);
+    menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+  }
+</script>
+<script>
+  /* scroll-hide nav */
+  (function(){
+    const w = document.querySelector('.nav-wrap');
+    if (!w) return;
+    let last = 0, ticking = false;
+    window.addEventListener('scroll', function(){
+      if (!ticking) {
+        requestAnimationFrame(function(){
+          const y = window.scrollY;
+          if (y > last && y > 80) { w.classList.add('nav-hidden'); }
+          else { w.classList.remove('nav-hidden'); }
+          last = y; ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
+</script>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Fermer">✕</button>
+  <div class="lightbox-content" id="lightboxContent"></div>
+</div>
+
+<script src="../assets/lightbox.js"></script>
+
+<script src="../assets/transitions.js"></script>
+</body>
+</html>
